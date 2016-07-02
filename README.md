@@ -53,4 +53,4 @@ aliases = {
 }
 ```
 
-would result in any mentions of JEREMY LEFURGE in a tournament to count towards the elo of NERFAN.
+would result in any mentions of JEREMY LEFURGE in a tournament to count towards the elo of NERFAN. Do note that all names should be full caps.
