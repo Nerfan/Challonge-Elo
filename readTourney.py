@@ -83,8 +83,8 @@ def parseTourney(tourneyId):
         tourneyId (str): The id used in the URL of the tournament
                          i.e. that part after http://challonge.com/
     """
-    print("Retreiving data from " + tournament["name"] + "...")
     tournament = challonge.tournaments.show(tourneyId)
+    print("Retreiving data from " + tournament["name"] + "...")
     participants = challonge.participants.index(tournament["id"])
     matches = challonge.matches.index(tournament["id"])
     print("Calculating elos...")
