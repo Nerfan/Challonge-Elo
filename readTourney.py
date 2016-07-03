@@ -15,13 +15,18 @@ TOURNAMENT_IDS_SEPARATED_BY_COMMAS\
         = "wfw6r2aw, lvrpool1, lvrpool2, lvrpool3, lvrpool4, lvrfinals, r1itlqi3, 833sm0zv, dlt4adcdfsdf, qg42dx64, dlt5jqfjksd, zhywqork, dlt6top5, 3v6ht1tz, dlt7, SmashFrankys3, SFRankysFinals, sf4s, sf4finals1"
 DEFAULT_ELO = 1200 # Starting elo for players
 
+# Global dictionary to contain elos
+# Keys are playernames in all caps, values are elos
 elos = {}
-aliases = {}
+
 import setCredentials # This is a file I made with two lines:
 # import challonge
-# challonge.setCredentials("USERNAME", "API_KEY")
+# challonge.set_credentials("USERNAME", "API_KEY")
 # USERNAME and API_KEY were replaced with my info, quotes included
-# You could simply put the second line directly in this file.
+# Alternatively, uncomment the folliwing line and add your information:
+# challonge.set_credentials("USERNAME", "API_KEY")
+
+aliases = {}
 from aliases import aliases # Another file I made with a dictionary
 # of replacements for names
 # For example, one of the entries is "JEREMY LEFURGE" : "NERFAN"
@@ -87,7 +92,6 @@ def parseTourney(tourneyId):
     print("Retreiving data from " + tournament["name"] + "...")
     participants = challonge.participants.index(tournament["id"])
     matches = challonge.matches.index(tournament["id"])
-    print("Calculating elos...")
     
     # Go through participants
     playersById = {} # Allows players to be accessed by ID
