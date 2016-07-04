@@ -7,7 +7,6 @@ pychallonge can be found here: https://github.com/russ-/pychallonge
 import operator
 
 import challonge
-import boxAndWhisker
 
 # I hope the name is descriptive enough; spaces are optional
 # The id is the part of the URL that comes after http://challonge.com/
@@ -30,22 +29,6 @@ aliases = {}
 from aliases import aliases # Another file I made with a dictionary
 # of replacements for names
 # For example, one of the entries is "JEREMY LEFURGE" : "NERFAN"
-
-def drawBoxAndWhisker():
-    """
-    Plot the elo scores on a box and whisker plot
-    """
-    scores = list(elos.values())
-    scores.sort()
-    medianIndex = len(scores)//2
-    q1Index = medianIndex//2
-    q3Index = medianIndex + q1Index
-    boxAndWhisker.boxAndWhisker(
-            scores[0],
-            scores[q1Index], 
-            scores[medianIndex], 
-            scores[q3Index], 
-            scores[-1])
 
 def calculateWin(initialWinnerElo, initialLoserElo):
     """
@@ -162,4 +145,6 @@ if __name__ == "__main__":
         parseTourney(tourney)
     printSortedElos()
     saveElos()
-    drawBoxAndWhisker()
+    if input("Display scores on a graph? (y/n) ") == "y":
+        import histogram
+        histogram.histogram(list(elos.values()))
