@@ -146,5 +146,5 @@ if __name__ == "__main__":
         import histogram
         lst = []
         for player in playersByName.values():
-            lst += player.elo
+            lst.append(player.elo)
         histogram.histogram(lst)
