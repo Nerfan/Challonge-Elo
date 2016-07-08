@@ -7,21 +7,20 @@ pychallonge can be found here: https://github.com/russ-/pychallonge
 import operator
 
 import challonge
+from player import Player
 
 # I hope the name is descriptive enough; spaces are optional
 # The id is the part of the URL that comes after http://challonge.com/
 TOURNAMENT_IDS_SEPARATED_BY_COMMAS\
         = "wfw6r2aw, lvrpool1, lvrpool2, lvrpool3, lvrpool4, lvrfinals, r1itlqi3, 833sm0zv, dlt4adcdfsdf, qg42dx64, dlt5jqfjksd, zhywqork, dlt6top5, 3v6ht1tz, dlt7, SmashFrankys3, SFRankysFinals, sf4s, sf4finals1"
 DEFAULT_ELO = 1200 # Starting elo for players
-
-# Global dictionary to contain elos
-# Keys are playernames in all caps, values are elos
-elos = {}
-
 import setCredentials # This is a file I made with two lines:
 # import challonge
 # challonge.set_credentials("USERNAME", "API_KEY")
 # USERNAME and API_KEY were replaced with my info, quotes included
+# The only reason I made the file is so that I don't accidentally upload my
+# challonge API key
+
 # Alternatively, uncomment the folliwing line and add your information:
 # challonge.set_credentials("USERNAME", "API_KEY")
 
@@ -30,33 +29,39 @@ from aliases import aliases # Another file I made with a dictionary
 # of replacements for names
 # For example, one of the entries is "JEREMY LEFURGE" : "NERFAN"
 
-def calculateWin(initialWinnerElo, initialLoserElo):
+# Global dictionary to contain elos
+# Keys are playernames in all caps, values are elos
+playersByName = {}
+# Allows players to be accessed by ID
+namesById = {}
+
+def parseMatch(match):
     """
-    Calculate changed ELOs based on a win.
+    Calculate changes on elo from a single match
 
     Args:
-        initialWinnerElo (float): Elo of the winner before this calculation
-        initialLoserElo (float): Elo of the loser before this calculation
-
-    Returns:
-        Tuple in the form (winnerElo, loserElo)
+        match (json object): Match to take into account to change elos
     """
-    k = 32 # The k factor for elo; larger values mean larger fluctuations
-    R1 = 10**(initialWinnerElo/400)
-    R2 = 10**(initialLoserElo/400)
-    E1 = R1/(R1+R2)
-    E2 = R2/(R1+R2)
-    finalWinnerElo = initialWinnerElo + k*(1-E1)
-    finalLoserElo = initialLoserElo + k*(-E2)
-    return (finalWinnerElo, finalLoserElo)
+    if match["winner-id"] != None:
+        # We need to figure out the ID of the losing player
+        if (match["winner-id"] == match["player1-id"]):
+            loserId = match["player2-id"]
+        else:
+            loserId = match["player1-id"]
+        winner = playersByName[namesById[match["winner-id"]]]
+        loser = playersByName[namesById[loserId]]
+        winner.calculateWin(loser)
+        loser.calculateLoss(winner)
 
 def printSortedElos():
     """
     Print a sorted list of players in order from highest to lowest elo.
     """
     print("Elos of all players in descending order:")
-    for elo in sorted(elos, key=elos.get, reverse=True):
-        print("{:20s}".format(elo) + "{:04.0f}".format(elos[elo]))
+    print("NAME                  ELO    W   G")
+    for player in sorted(list(playersByName.values()),\
+            key=lambda x: x.elo, reverse=True):
+        print(player.toString())
 
 def parseTourney(tourneyId):
     """
@@ -77,30 +82,18 @@ def parseTourney(tourneyId):
     matches = challonge.matches.index(tournament["id"])
     
     # Go through participants
-    playersById = {} # Allows players to be accessed by ID
     for participant in participants:
         name = participant["display-name"].upper()
         if name in aliases:
             name = aliases[name]
-        playersById[participant["id"]] = name
-        if not name in elos:
+        namesById[participant["id"]] = name
+        if not name in playersByName:
             # Adds players to the elo records
-            elos[name] = DEFAULT_ELO
+            playersByName[name] = Player(name, DEFAULT_ELO, 0, 0)
     
     # Go through matches
     for match in matches:
-        if match["winner-id"] != None:
-            # We need to figure out the ID of the losing player
-            if (match["winner-id"] == match["player1-id"]):
-                loserId = match["player2-id"]
-            else:
-                loserId = match["player1-id"]
-            # Set variables for easier to read code
-            winner = playersById[match["winner-id"]]
-            loser = playersById[loserId]
-            newElos = calculateWin(elos[winner], elos[loser] )
-            elos[winner] = newElos[0]
-            elos[loser] = newElos[1]
+        parseMatch(match)
 
 def saveElos():
     """
@@ -113,8 +106,9 @@ def saveElos():
     """
     file = open("elos.txt", "w")
     file.truncate()
-    for elo in sorted(elos, key=elos.get, reverse=True):
-        file.write("{:20s}".format(elo) + str(elos[elo]) + "\n")
+    for player in sorted(list(playersByName.values()),\
+            key=lambda x: x.elo, reverse=True):
+        file.write(player.toString() + "\n")
     file.close()
 
 def readElos(filename):
@@ -130,10 +124,13 @@ def readElos(filename):
         if line.strip() != "":
             temp = line.split()
             name = ""
-            for i in range(len(temp)-1):
+            for i in range(len(temp)-3):
                 name += temp[i] + " "
             name = name.strip()
-            elos[name] = float(line.split()[-1])
+            playersByName[name] = Player(name, \
+                    float(temp[-3]), \
+                    int(temp[-2]), \
+                    int(temp[-1]))
     file.close()
 
 if __name__ == "__main__":
@@ -147,4 +144,7 @@ if __name__ == "__main__":
     saveElos()
     if input("Display scores on a graph? (y/n) ") == "y":
         import histogram
-        histogram.histogram(list(elos.values()))
+        lst = []
+        for player in playersByName.values():
+            lst += player.elo
+        histogram.histogram(lst)
