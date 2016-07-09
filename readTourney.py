@@ -43,13 +43,8 @@ def parseMatch(match):
         match (json object): Match to take into account to change elos
     """
     if match["winner-id"] != None:
-        # We need to figure out the ID of the losing player
-        if (match["winner-id"] == match["player1-id"]):
-            loserId = match["player2-id"]
-        else:
-            loserId = match["player1-id"]
         winner = playersByName[namesById[match["winner-id"]]]
-        loser = playersByName[namesById[loserId]]
+        loser = playersByName[namesById[match["loser-id"]]]
         winner.calculateWin(loser)
         loser.calculateLoss(winner)
 
