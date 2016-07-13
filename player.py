@@ -19,7 +19,7 @@ class Player():
         self.won=won
         self.played=played
 
-    def calculateWin(self, loser):
+    def calculateWin(self, loser, score="1-0"):
         """
         Calculate and apply a change in elo based on a win
 
@@ -33,9 +33,16 @@ class Player():
         R1 = 10**(self.elo/400)
         R2 = 10**(loser.elo/400)
         E1 = R1/(R1+R2)
-        self.elo=self.elo + k*(1-E1)
+        result = 1
+        if score == "2-0" or score == "3-1" or score == "1-0":
+            result = 1 
+        elif score == "2-1" or score == "3-2":
+            result = .66
+        elif score == "3-0":
+            result = 1.25
+        self.elo=self.elo + k*(result-E1)
 
-    def calculateLoss(self, winner):
+    def calculateLoss(self, winner, score="1-0"):
         """
         Calculate and apply a change in elo based on a loss
 
@@ -48,7 +55,14 @@ class Player():
         R1 = 10**(winner.elo/400)
         R2 = 10**(self.elo/400)
         E2 = R2/(R1+R2)
-        self.elo=self.elo + k*(-E2)
+        result = 0
+        if score == "2-0" or score == "3-1" or score == "1-0":
+            result = 0 
+        elif score == "2-1" or score == "3-2":
+            result = .33
+        elif score == "3-0":
+            result = -0.25
+        self.elo=self.elo + k*(result-E2)
 
     def toString(self):
         """

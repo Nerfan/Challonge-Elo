@@ -43,17 +43,21 @@ def parseMatch(match):
         match (json object): Match to take into account to change elos
     """
     if match["winner-id"] != None:
+        if match["scores-csv"] != None:
+            score = match["scores-csv"]
+        else:
+            score = "1-0"
         winner = playersByName[namesById[match["winner-id"]]]
         loser = playersByName[namesById[match["loser-id"]]]
-        winner.calculateWin(loser)
-        loser.calculateLoss(winner)
+        winner.calculateWin(loser, score)
+        loser.calculateLoss(winner, score)
 
 def printSortedElos():
     """
     Print a sorted list of players in order from highest to lowest elo.
     """
     print("Elos of all players in descending order:")
-    print("NAME                  ELO    W   G")
+    print("NAME                  ELO    W    G")
     for player in sorted(list(playersByName.values()),\
             key=lambda x: x.elo, reverse=True):
         print(player.toString())
