@@ -64,7 +64,7 @@ class Player():
             result = -0.25
         self.elo=self.elo + k*(result-E2)
 
-    def toString(self):
+    def __str__(self):
         """
         Return a text representation of the player
 
@@ -75,3 +75,5 @@ class Player():
                 " " + "{:0>4.0f}".format(self.elo) + \
                 " " + "{:>4d}".format(self.won) + \
                 " " + "{:>4d}".format(self.played))
+
+    __repr__ = __str__

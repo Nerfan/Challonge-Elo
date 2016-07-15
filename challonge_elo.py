@@ -11,9 +11,14 @@ from player import Player
 
 # I hope the name is descriptive enough; spaces are optional
 # The id is the part of the URL that comes after http://challonge.com/
-TOURNAMENT_IDS_SEPARATED_BY_COMMAS\
-        = "wfw6r2aw, lvrpool1, lvrpool2, lvrpool3, lvrpool4, lvrfinals, r1itlqi3, 833sm0zv, dlt4adcdfsdf, qg42dx64, dlt5jqfjksd, zhywqork, dlt6top5, 3v6ht1tz, dlt7, SmashFrankys3, SFRankysFinals, sf4s, sf4finals1"
+TOURNAMENT_IDS_SEPARATED_BY_COMMAS = (
+        "wfw6r2aw, lvrpool1, lvrpool2, lvrpool3, lvrpool4, lvrfinals,"
+        "r1itlqi3, 833sm0zv, dlt4adcdfsdf, qg42dx64, dlt5jqfjksd, zhywqork,"
+        "dlt6top5, 3v6ht1tz, dlt7,"
+        "SmashFrankys3, SFRankysFinals, sf4s, sf4finals1"
+        )
 DEFAULT_ELO = 1200 # Starting elo for players
+
 import setCredentials # This is a file I made with two lines:
 # import challonge
 # challonge.set_credentials("USERNAME", "API_KEY")
@@ -31,11 +36,11 @@ from aliases import aliases # Another file I made with a dictionary
 
 # Global dictionary to contain elos
 # Keys are playernames in all caps, values are elos
-playersByName = {}
+players_by_name = {}
 # Allows players to be accessed by ID
-namesById = {}
+names_by_id = {}
 
-def parseMatch(match):
+def parse_match(match):
     """
     Calculate changes on elo from a single match
 
@@ -47,22 +52,22 @@ def parseMatch(match):
             score = match["scores-csv"]
         else:
             score = "1-0"
-        winner = playersByName[namesById[match["winner-id"]]]
-        loser = playersByName[namesById[match["loser-id"]]]
+        winner = players_by_name[names_by_id[match["winner-id"]]]
+        loser = players_by_name[names_by_id[match["loser-id"]]]
         winner.calculateWin(loser, score)
         loser.calculateLoss(winner, score)
 
-def printSortedElos():
+def print_elos():
     """
     Print a sorted list of players in order from highest to lowest elo.
     """
     print("Elos of all players in descending order:")
     print("NAME                  ELO    W    G")
-    for player in sorted(list(playersByName.values()),\
+    for player in sorted(list(players_by_name.values()),
             key=lambda x: x.elo, reverse=True):
-        print(player.toString())
+        print(player)
 
-def parseTourney(tourneyId):
+def parse_tourney(tourneyId):
     """
     Calculate elo changes from a tournament.
 
@@ -85,16 +90,16 @@ def parseTourney(tourneyId):
         name = participant["display-name"].upper()
         if name in aliases:
             name = aliases[name]
-        namesById[participant["id"]] = name
-        if not name in playersByName:
+        names_by_id[participant["id"]] = name
+        if not name in players_by_name:
             # Adds players to the elo records
-            playersByName[name] = Player(name, DEFAULT_ELO, 0, 0)
+            players_by_name[name] = Player(name, DEFAULT_ELO, 0, 0)
     
     # Go through matches
     for match in matches:
-        parseMatch(match)
+        parse_match(match)
 
-def saveElos():
+def save_elos():
     """
     Save the elos to a file
 
@@ -105,16 +110,17 @@ def saveElos():
     """
     file = open("elos.txt", "w")
     file.truncate()
-    for player in sorted(list(playersByName.values()),\
+    for player in sorted(list(players_by_name.values()),
             key=lambda x: x.elo, reverse=True):
-        file.write(player.toString() + "\n")
+        file.write(str(player) + "\n")
     file.close()
 
-def readElos(filename):
+def read_elos(filename):
     """
     Read pre-existing elos from a file and put them into the elo dictionary
 
-    Assumes that the file is in the format used by saveElos()
+    Assumes that the file is in the format used by save_elos()
+
     Args:
         filename (str): Name/path of file beginning in current directory
     """
@@ -126,24 +132,24 @@ def readElos(filename):
             for i in range(len(temp)-3):
                 name += temp[i] + " "
             name = name.strip()
-            playersByName[name] = Player(name, \
-                    float(temp[-3]), \
-                    int(temp[-2]), \
+            players_by_name[name] = Player(name,
+                    float(temp[-3]),
+                    int(temp[-2]),
                     int(temp[-1]))
     file.close()
 
 if __name__ == "__main__":
     filename = input("File to read pre-existing elos from? Blank if none. ")
     if (filename.strip() != ""):
-        readElos(filename)
+        read_elos(filename)
     tourneys = TOURNAMENT_IDS_SEPARATED_BY_COMMAS.replace(" ", "").split(",")
     for tourney in tourneys:
-        parseTourney(tourney)
-    printSortedElos()
-    saveElos()
+        parse_tourney(tourney)
+    print_elos()
+    save_elos()
     if input("Display scores on a graph? (y/n) ") == "y":
         import histogram
         lst = []
-        for player in playersByName.values():
+        for player in players_by_name.values():
             lst.append(player.elo)
         histogram.histogram(lst)
