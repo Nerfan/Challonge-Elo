@@ -4,7 +4,6 @@ Takes data from Challonge to calculate elos of players.
 Uses the Challonge public API and pychallonge to parse data.
 pychallonge can be found here: https://github.com/russ-/pychallonge
 """
-import operator
 
 import challonge
 from player import Player
@@ -12,11 +11,11 @@ from player import Player
 # I hope the name is descriptive enough; spaces are optional
 # The id is the part of the URL that comes after http://challonge.com/
 TOURNAMENT_IDS_SEPARATED_BY_COMMAS = (
-        "wfw6r2aw, lvrpool1, lvrpool2, lvrpool3, lvrpool4, lvrfinals,"
-        "r1itlqi3, 833sm0zv, dlt4adcdfsdf, qg42dx64, dlt5jqfjksd, zhywqork,"
-        "dlt6top5, 3v6ht1tz, dlt7,"
-        "SmashFrankys3, SFRankysFinals, sf4s, sf4finals1"
-        )
+    "wfw6r2aw, lvrpool1, lvrpool2, lvrpool3, lvrpool4, lvrfinals,"
+    "r1itlqi3, 833sm0zv, dlt4adcdfsdf, qg42dx64, dlt5jqfjksd, zhywqork,"
+    "dlt6top5, 3v6ht1tz, dlt7,"
+    "SmashFrankys3, SFRankysFinals, sf4s, sf4finals1"
+    )
 DEFAULT_ELO = 1200 # Starting elo for players
 
 import setCredentials # This is a file I made with two lines:
@@ -64,10 +63,10 @@ def print_elos():
     print("Elos of all players in descending order:")
     print("NAME                  ELO    W    G")
     for player in sorted(list(players_by_name.values()),
-            key=lambda x: x.elo, reverse=True):
+                         key=lambda x: x.elo, reverse=True):
         print(player)
 
-def parse_tourney(tourneyId):
+def parse_tourney(tourney_id):
     """
     Calculate elo changes from a tournament.
 
@@ -77,14 +76,14 @@ def parse_tourney(tourneyId):
     Then calculate elo changes and apply them.
 
     Args:
-        tourneyId (str): The id used in the URL of the tournament
+        tourney_id (str): The id used in the URL of the tournament
                          i.e. that part after http://challonge.com/
     """
-    tournament = challonge.tournaments.show(tourneyId)
+    tournament = challonge.tournaments.show(tourney_id)
     print("Retreiving data from " + tournament["name"] + "...")
     participants = challonge.participants.index(tournament["id"])
     matches = challonge.matches.index(tournament["id"])
-    
+
     # Go through participants
     for participant in participants:
         name = participant["display-name"].upper()
@@ -94,7 +93,7 @@ def parse_tourney(tourneyId):
         if not name in players_by_name:
             # Adds players to the elo records
             players_by_name[name] = Player(name, DEFAULT_ELO, 0, 0)
-    
+
     # Go through matches
     for match in matches:
         parse_match(match)
@@ -111,7 +110,7 @@ def save_elos():
     file = open("elos.txt", "w")
     file.truncate()
     for player in sorted(list(players_by_name.values()),
-            key=lambda x: x.elo, reverse=True):
+                         key=lambda x: x.elo, reverse=True):
         file.write(str(player) + "\n")
     file.close()
 
@@ -133,9 +132,9 @@ def read_elos(filename):
                 name += temp[i] + " "
             name = name.strip()
             players_by_name[name] = Player(name,
-                    float(temp[-3]),
-                    int(temp[-2]),
-                    int(temp[-1]))
+                                           float(temp[-3]),
+                                           int(temp[-2]),
+                                           int(temp[-1]))
     file.close()
 
 if __name__ == "__main__":
