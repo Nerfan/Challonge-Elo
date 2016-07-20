@@ -20,7 +20,7 @@ Thanks also to GitHub user russ- for creating [pychallonge](https://github.com/r
 
    ```python
    import challonge
-   challonge.setCredentials("USERNAME", "API_KEY")
+   challonge.set_credentials("USERNAME", "API_KEY")
    ```
 
    replacing USERNAME and API_KEY with your information, while keeping the surrounding quotes.
