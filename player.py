@@ -35,11 +35,13 @@ class Player():
         E1 = R1/(R1+R2)
         result = 1
         if score == "2-0" or score == "3-1" or score == "1-0":
-            result = 1 
+            result = 1
         elif score == "2-1" or score == "3-2":
             result = .66
         elif score == "3-0":
             result = 1.25
+        else:
+            return
         self.elo=self.elo + k*(result-E1)
 
     def calculateLoss(self, winner, score="1-0"):
@@ -62,6 +64,8 @@ class Player():
             result = .33
         elif score == "3-0":
             result = -0.25
+        else:
+            return
         self.elo=self.elo + k*(result-E2)
 
     def __str__(self):
