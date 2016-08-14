@@ -48,19 +48,39 @@ def save_elos(filename="elos.txt"):
         file.write(str(player) + "\n")
     file.close()
 
-def filter_by_games(minimum):
+def filter_by_games(eloslist, minimum):
     """
     Remove entries from the list of elos with below a certain number of games
 
     Args:
+        eloslist (list of Players): List to be filtered
         minimum (int): Minimum number of games players should have played
                        Anybody with fewer games is removed from the elos list
+
+    Returns:
+        list of Players
     """
-    for player in elos:
+    for player in eloslist:
         if player.played < minimum:
-            elos.remove(player)
+            eloslist.remove(player)
+    return eloslist
+
+def filter_by_rank(eloslist, cutoff):
+    """
+    Remove entries beyond a certain rank
+
+    Args:
+        eloslist (list of Players): List to be filtered
+        cutoff (int): Last rank to keep (e..g 10 if you want to top 10)
+    """
+    i = 0
+    for player in sorted(list(eloslist), key=lambda x: x.elo, reverse=True):
+        if i >= cutoff:
+            eloslist.remove(player)
+        i += 1
+    return eloslist
 
 
 read_elos("elos.txt")
-filter_by_games(10)
+filter_by_games(elos, 10)
 save_elos()
