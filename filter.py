@@ -80,6 +80,19 @@ def filter_by_rank(eloslist, cutoff):
         i += 1
     return eloslist
 
+def filter_by_elo(eloslist, elo):
+    """
+    Remove entries below a certain elo
+
+    Args:
+        eloslist (list of PLayers): List to be filtered
+        elo (int): Minimum elo to be left in the list
+    """
+    for player in eloslist:
+        if player.elo < elo:
+            eloslist.remove(player)
+    return eloslist
+
 
 read_elos("elos.txt")
 filter_by_games(elos, 10)
