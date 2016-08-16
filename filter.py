@@ -58,7 +58,7 @@ def filter_by_games(eloslist, minimum):
                        Anybody with fewer games is removed from the elos list
 
     Returns:
-        list of Players
+        list of Players who have played at least the minumum games
     """
     for player in eloslist:
         if player.played < minimum:
@@ -71,7 +71,10 @@ def filter_by_rank(eloslist, cutoff):
 
     Args:
         eloslist (list of Players): List to be filtered
-        cutoff (int): Last rank to keep (e..g 10 if you want to top 10)
+        cutoff (int): Last rank to keep (e.g. 10 if you want to top 10)
+
+    Returns:
+        list of Players who are ranked at or above the cutoff
     """
     i = 0
     for player in sorted(list(eloslist), key=lambda x: x.elo, reverse=True):
@@ -87,6 +90,9 @@ def filter_by_elo(eloslist, elo):
     Args:
         eloslist (list of PLayers): List to be filtered
         elo (int): Minimum elo to be left in the list
+
+    Returns:
+        list of Players who have at least the given elo
     """
     for player in eloslist:
         if player.elo < elo:
