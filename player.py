@@ -2,6 +2,8 @@
 Provides a class for information to be stored about players
 """
 
+SEASON1 = True
+
 class Player():
 
     def __init__(self, name, elo, won, played):
@@ -34,13 +36,16 @@ class Player():
         R2 = 10**(loser.elo/400)
         E1 = R1/(R1+R2)
         result = 1
-        if score == "2-0" or score == "3-1" or score == "1-0":
-            result = 1
-        elif score == "2-1" or score == "3-2":
-            result = .66
-        elif score == "3-0":
-            result = 1.25
-        else:
+        if not SEASON1:
+            if score == "2-0" or score == "3-1" or score == "1-0":
+                result = 1
+            elif score == "2-1" or score == "3-2":
+                result = .66
+            elif score == "3-0":
+                result = 1.25
+            else:
+                return
+        if score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0"]:
             return
         self.elo=self.elo + k*(result-E1)
 
@@ -58,13 +63,16 @@ class Player():
         R2 = 10**(self.elo/400)
         E2 = R2/(R1+R2)
         result = 0
-        if score == "2-0" or score == "3-1" or score == "1-0":
-            result = 0 
-        elif score == "2-1" or score == "3-2":
-            result = .33
-        elif score == "3-0":
-            result = -0.25
-        else:
+        if not SEASON1:
+            if score == "2-0" or score == "3-1" or score == "1-0":
+                result = 0
+            elif score == "2-1" or score == "3-2":
+                result = .33
+            elif score == "3-0":
+                result = -0.25
+            else:
+                return
+        if score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0"]:
             return
         self.elo=self.elo + k*(result-E2)
 
