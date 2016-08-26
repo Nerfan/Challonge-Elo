@@ -60,9 +60,12 @@ def filter_by_games(eloslist, minimum):
     Returns:
         list of Players who have played at least the minimum games
     """
+    toremove = []
     for player in eloslist:
         if player.played < minimum:
-            eloslist.remove(player)
+            toremove.append(player)
+    for player in toremove:
+        eloslist.remove(player)
     return eloslist
 
 def filter_by_wins(eloslist, wins):
@@ -76,9 +79,12 @@ def filter_by_wins(eloslist, wins):
     Returns:
         list of Players who have won at least the minimum number of games
     """
+    toremove = []
     for player in eloslist:
         if player.won < wins:
-            eloslist.remove(player)
+            toremove.append(player)
+    for player in toremove:
+        eloslist.remove(player)
     return eloslist
 
 
@@ -111,14 +117,15 @@ def filter_by_elo(eloslist, elo):
     Returns:
         list of Players who have at least the given elo
     """
+    toremove = []
     for player in eloslist:
         if player.elo < elo:
-            eloslist.remove(player)
+            toremove.append(player)
+    for player in toremove:
+        eloslist.remove(player)
     return eloslist
 
 
 read_elos("elos.txt")
-elos = filter_by_wins(elos, 7)
-for player in elos:
-    print(player)
+elos = filter_by_rank(elos, 10)
 save_elos()
