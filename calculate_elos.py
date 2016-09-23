@@ -8,15 +8,6 @@ pychallonge can be found here: https://github.com/russ-/pychallonge
 import challonge
 from player import Player
 
-# I hope the name is descriptive enough; spaces are optional
-# The id is the part of the URL that comes after http://challonge.com/
-TOURNAMENT_IDS_SEPARATED_BY_COMMAS = (
-    "wfw6r2aw, lvrpool1, lvrpool2, lvrpool3, lvrpool4, lvrfinals,"
-    "r1itlqi3, 833sm0zv, dlt4adcdfsdf, qg42dx64, dlt5jqfjksd, zhywqork,"
-    "dlt6top5, 3v6ht1tz, dlt7,"
-    "SmashFrankys3, SFRankysFinals, sf4s, sf4finals1"
-    )
-DEFAULT_ELO = 1200 # Starting elo for players
 
 import setCredentials # This is a file I made with two lines:
 # import challonge
@@ -28,10 +19,17 @@ import setCredentials # This is a file I made with two lines:
 # Alternatively, uncomment the folliwing line and add your information:
 # challonge.set_credentials("USERNAME", "API_KEY")
 
-aliases = {}
 from aliases import aliases # Another file I made with a dictionary
 # of replacements for names
 # For example, one of the entries is "JEREMY LEFURGE" : "NERFAN"
+
+from tournamentlist import tourneys # And again, same case as aliases
+# Just a list if strings instead of a dictionary.
+# The strings represent the tournement.
+# For each tournament, the string to enter is the part of the URL after
+# http://challonge.com/
+
+DEFAULT_ELO = 1200 # Starting elo for players
 
 # Global dictionary to contain elos
 # Keys are playernames in all caps, values are elos
@@ -141,7 +139,6 @@ if __name__ == "__main__":
     filename = input("File to read pre-existing elos from? Blank if none. ")
     if (filename.strip() != ""):
         read_elos(filename)
-    tourneys = TOURNAMENT_IDS_SEPARATED_BY_COMMAS.replace(" ", "").split(",")
     for tourney in tourneys:
         parse_tourney(tourney)
     print_elos()
