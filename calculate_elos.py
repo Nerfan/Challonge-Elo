@@ -28,6 +28,8 @@ from tournamentlist import tourneys # And again, same case as aliases
 # The strings represent the tournement.
 # For each tournament, the string to enter is the part of the URL after
 # http://challonge.com/
+# For example, if your URL is http://challonge.com/wfw6r2aw,
+# enter wfw6r2aw as a string into the list.
 
 DEFAULT_ELO = 1200 # Starting elo for players
 
