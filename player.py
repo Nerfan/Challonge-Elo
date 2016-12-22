@@ -2,7 +2,7 @@
 Provides a class for information to be stored about players
 """
 
-SEASON1 = False
+SEASON1 = True
 
 class Player():
 

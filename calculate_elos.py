@@ -6,9 +6,9 @@ Uses the Challonge public API and pychallonge to parse data.
 pychallonge can be found here: https://github.com/russ-/pychallonge
 """
 
+import pickle
 import challonge
 from player import Player
-
 
 import setCredentials # This is a file I made with two lines:
 # import challonge
@@ -39,10 +39,32 @@ DEFAULT_ELO = 1200 # Starting elo for players
 players_by_name = {}
 # Allows players to be accessed by ID
 names_by_id = {}
+# List of all matches
+all_matches = []
+
+def read_tournaments():
+    """
+    Read information from pickle files.
+
+    Assumes that the files exist as created by save_tournaments.py.
+    Initializes players_by_name, names_by_id, and all_matches.
+    """
+    # Tell python that we want to use the global variables
+    global players_by_name
+    global names_by_id
+    global all_matches
+    with open("obj/playernames.pkl", "rb") as f:
+        players_by_name = pickle.load(f)
+    with open("obj/playerids.pkl", "rb") as f:
+        names_by_id = pickle.load(f)
+    with open("obj/matches.pkl", "rb") as f:
+        all_matches = pickle.load(f)
 
 def parse_match(match):
     """
-    Calculate changes on elo from a single match
+    Calculate changes to players from a single match.
+
+    Calculate elo changes and record the match to the Player object.
 
     Args:
         match (json object): Match to take into account to change elos
@@ -52,10 +74,22 @@ def parse_match(match):
             score = match["scores-csv"]
         else:
             score = "1-0"
+        # Make sure score is within a reasonable range to protect against dq's
+        if score not in ["1-0", "2-0", "3-0", "2-1", "3-1", "3-2",
+                         "0-1", "0-2", "0-3", "1-2", "1-3", "2-3"]:
+            return
         winner = players_by_name[names_by_id[match["winner-id"]]]
         loser = players_by_name[names_by_id[match["loser-id"]]]
+        # Calculate elo changes
         winner.calculateWin(loser, score)
         loser.calculateLoss(winner, score)
+        # Record match for head-to-head
+        if loser not in winner.h2hwins:
+            winner.h2hwins[loser] = []
+        winner.h2hwins[loser].append(match)
+        if winner not in loser.h2hlosses:
+            loser.h2hlosses[winner] = []
+        loser.h2hlosses[winner].append(match)
 
 def print_elos():
     """
@@ -66,38 +100,6 @@ def print_elos():
     for player in sorted(list(players_by_name.values()),
                          key=lambda x: x.elo, reverse=True):
         print(player)
-
-def parse_tourney(tourney_id):
-    """
-    Calculate elo changes from a tournament.
-
-    Tell the user that a tournament is being parsed.
-    Then go through the participants and add them to the record.
-    Afterwards, go through each match and find the winner.
-    Then calculate elo changes and apply them.
-
-    Args:
-        tourney_id (str): The id used in the URL of the tournament
-                         i.e. that part after http://challonge.com/
-    """
-    tournament = challonge.tournaments.show(tourney_id)
-    print("Retreiving data from " + tournament["name"] + "...")
-    participants = challonge.participants.index(tournament["id"])
-    matches = challonge.matches.index(tournament["id"])
-
-    # Go through participants
-    for participant in participants:
-        name = participant["display-name"].upper()
-        if name in aliases:
-            name = aliases[name]
-        names_by_id[participant["id"]] = name
-        if not name in players_by_name:
-            # Adds players to the elo records
-            players_by_name[name] = Player(name, DEFAULT_ELO, 0, 0)
-
-    # Go through matches
-    for match in matches:
-        parse_match(match)
 
 def save_elos():
     """
@@ -138,18 +140,52 @@ def read_elos(filename):
                                            int(temp[-1]))
     file.close()
 
-if __name__ == "__main__":
-    #filename = input("File to read pre-existing elos from? Blank if none. ")
-    filename = ""
-    if filename.strip() != "":
-        read_elos(filename)
-    for tourney in tourneys:
-        parse_tourney(tourney)
+def init():
+    """
+    Initialize Player data based on tournaments that were read before.
+
+    Assumes obj/ was filled by save_tournaments.py.
+    Fills global dictionaries and edits based on matches.
+    """
+    read_tournaments()
+    for match in all_matches:
+        parse_match(match)
+
+def elos():
+    """
+    Print and save elos.
+    """
     print_elos()
     save_elos()
-#    if input("Display scores on a graph? (y/n) ") == "y":
-#        import histogram
-#        lst = []
-#        for player in players_by_name.values():
-#            lst.append(player.elo)
-#        histogram.histogram(lst)
+    # TODO stuff with filtering
+
+def h2h():
+    """
+    Ask the user if they would like to see head-to-head statistics.
+    """
+    while True: # Loop until we break out of it
+        playername = input("Whose records would you like to see? ")
+        playername = playername.upper()
+        if playername == "": # Break on no input
+            break
+        if playername not in players_by_name: # Need a real player
+            print("Error: " + playername + " not found.")
+        else:
+            print(players_by_name[playername].h2h_list())
+            while True: # Ask for details
+                details = input("Would you like detailed information " \
+                                + "about a specific head-to-head? ")
+                details = details.upper()
+                if details == "": # Break on no input
+                    break
+                if details not in players_by_name: # Need a real player
+                    print("Error: " + details + " not found.")
+                else:
+                    other = players_by_name[details]
+                    print(players_by_name[playername].h2h_details(other))
+
+
+if __name__ == "__main__":
+    init()
+    elos()
+    h2h()
