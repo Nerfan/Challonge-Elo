@@ -127,5 +127,5 @@ def filter_by_elo(eloslist, elo):
 
 
 read_elos("elos.txt")
-elos = filter_by_rank(elos, 10)
-save_elos()
+elos = filter_by_games(elos,8)
+save_elos("filtered.txt")
