@@ -35,7 +35,9 @@ Thanks also to GitHub user russ- for creating [pychallonge](https://github.com/r
 
 3. Then, in readTourney.py edit the list of tournaments. The variable TOURNAMENT_IDS_SEPARATED_BY_COMMAS represents this list. Spaces are optional in the listing.
 
-4. After that, you could be good to simply run `$ python readTourney.py`, and elo rankings will be saved to elos.txt.
+4. One the tournament ids are entered and the aliases are set(see Additional Configuration), run `$ ./save_tournaments.py`.
+
+5. After that, you could be good to simply run `$ ./calculate_elos.py`, and elo rankings will be saved to elos.txt.
 
 ## Additional Configuration
 
