@@ -1,3 +1,4 @@
+#!/usr/bin/python3.5
 """
 Filters elos rankings to a certain subset of players.
 

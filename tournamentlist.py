@@ -9,10 +9,11 @@ tourneys = [
     "oho5j2c3", "DLT10",
     "tfstkkb9", "dlt11top8",
     "q19dc37q", "dlt12top8",
+    "SCCCGR"
     ]
 
 # RIT Tourneys
 #tourneys = [
 #    "ritsmash-tpg1s4", "ritsmash-tpg2s4", "ritsmash-tpg3s4", "ritsmash-tpg4s4",
-#    "ritsmash-tpg5s4", "ritsmash-tpg6s4", "ritsmash-tpg7s4",
+#    "ritsmash-tpg5s4", "ritsmash-tpg6s4", "ritsmash-tpg7s4", "ritsmash-tpg8s4"
 #    ]

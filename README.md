@@ -23,7 +23,7 @@ Thanks also to GitHub user russ- for creating [pychallonge](https://github.com/r
    challonge.set_credentials("USERNAME", "API_KEY")
    ```
 
-   replacing USERNAME and API_KEY with your information, while keeping the surrounding quotes.
+   replacing `USERNAME` and `API_KEY` with your information, while keeping the surrounding quotes.
 
    Alternatively, you could edit readTourney.py and replace the line
 
@@ -33,19 +33,21 @@ Thanks also to GitHub user russ- for creating [pychallonge](https://github.com/r
 
    with the second line of the code block above.
 
-3. Then, in readTourney.py edit the list of tournaments. The variable TOURNAMENT_IDS_SEPARATED_BY_COMMAS represents this list. Spaces are optional in the listing.
+3. Then, in readTourney.py edit the list of tournaments. The variable `TOURNAMENT_IDS_SEPARATED_BY_COMMAS` represents this list. Spaces are optional in the listing.
 
-4. One the tournament ids are entered and the aliases are set(see Additional Configuration), run `$ ./save_tournaments.py`.
+4. One the tournament ids are entered, run `$ ./save_tournaments.py`.
 
-5. After that, you could be good to simply run `$ ./calculate_elos.py`, and elo rankings will be saved to elos.txt.
+5. After that, you could be good to simply run `$ ./calculate_elos.py`, and elo rankings will be displayed and saved to elos.txt.
+
+6. If you would like to see a specific player's head-to-head records against all other players, type their name when prompted. If you would like to see details (match scores, dates) about their head-to-head with another specific player, enter their name when prompted. No input will back out of either prompt.
 
 ## Additional Configuration
 
 The DEFAULT_ELO variable in readTourney.py can be adjusted as you wish in order to change the starting elo for new players.
 
-The function calculateWin in readTourney.py can be changed as you like. For example, you can change the k value to have a larger fluctuation in elos following a match. The entire formula could be changed, though it must still take arguments for elos befrore calculations and must return a tuple of the resulting elos.
+The function calculateWin in player.py can be changed as you like. For example, you can change the k value to have a larger fluctuation in elos following a match. The entire formula could be changed, though it must still take arguments for elos befrore calculations and must return a tuple of the resulting elos.
 
-If you do not wish for elos to be displayed or saved or a plot made, comment out the respective line at the end of readTourney.py.
+If you do not wish for elos to be displayed or saved, comment out the respective line at the end of readTourney.py.
 
 You can create a file called aliases.py containing only the declaration of a dictionary called aliases in order to allow for multiple names for the same competitor. For example:
 

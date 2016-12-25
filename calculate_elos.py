@@ -7,30 +7,11 @@ pychallonge can be found here: https://github.com/russ-/pychallonge
 """
 
 import pickle
-import challonge
 from player import Player
-
-import setCredentials # This is a file I made with two lines:
-# import challonge
-# challonge.set_credentials("USERNAME", "API_KEY")
-# USERNAME and API_KEY were replaced with my info, quotes included
-# The only reason I made the file is so that I don't accidentally upload my
-# challonge API key
-
-# Alternatively, uncomment the folliwing line and add your information:
-# challonge.set_credentials("USERNAME", "API_KEY")
 
 from aliases import aliases # Another file I made with a dictionary
 # of replacements for names
 # For example, one of the entries is "JEREMY LEFURGE" : "NERFAN"
-
-from tournamentlist import tourneys # And again, same case as aliases
-# Just a list if strings instead of a dictionary.
-# The strings represent the tournement.
-# For each tournament, the string to enter is the part of the URL after
-# http://challonge.com/
-# For example, if your URL is http://challonge.com/wfw6r2aw,
-# enter wfw6r2aw as a string into the list.
 
 DEFAULT_ELO = 1200 # Starting elo for players
 
@@ -53,18 +34,29 @@ def read_tournaments():
     global players_by_name
     global names_by_id
     global all_matches
-    with open("obj/playernames.pkl", "rb") as f:
-        players_by_name = pickle.load(f)
-    with open("obj/playerids.pkl", "rb") as f:
-        names_by_id = pickle.load(f)
+    with open("obj/participants.pkl", "rb") as f:
+        participants = pickle.load(f)
     with open("obj/matches.pkl", "rb") as f:
         all_matches = pickle.load(f)
+    # Go through participants
+    for participant in participants:
+        # Normalize all names
+        name = participant["display-name"].upper()
+        # Check for known aliases
+        if name in aliases:
+            name = aliases[name]
+        # Add to a dictionary; key is id; value is name (string, all caps)
+        names_by_id[participant["id"]] = name
+        # If this is a new player, create a Player object to represent them
+        if not name in players_by_name:
+            players_by_name[name] = Player(name, DEFAULT_ELO, 0, 0)
 
 def parse_match(match):
     """
     Calculate changes to players from a single match.
 
-    Calculate elo changes and record the match to the Player object.
+    Calculate elo changes and record the match to the Player object
+    for head-to-head purposes.
 
     Args:
         match (json object): Match to take into account to change elos
@@ -103,7 +95,7 @@ def print_elos():
 
 def save_elos():
     """
-    Save the elos to a file
+    Save the elos to a file.
 
     Each line of the file is in the form:
     NAME                ELO
@@ -139,6 +131,8 @@ def read_elos(filename):
                                            int(temp[-2]),
                                            int(temp[-1]))
     file.close()
+
+# "Main" functions
 
 def init():
     """
