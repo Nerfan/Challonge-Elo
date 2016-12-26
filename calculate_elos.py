@@ -6,6 +6,8 @@ Uses the Challonge public API and pychallonge to parse data.
 pychallonge can be found here: https://github.com/russ-/pychallonge
 """
 
+import os
+import os.path
 import pickle
 from player import Player
 
@@ -140,7 +142,16 @@ def init():
 
     Assumes obj/ was filled by save_tournaments.py.
     Fills global dictionaries and edits based on matches.
+
+    If Python sees that the directory/files do not exist,
+    then the tournament data is read now.
     """
+    if not (os.path.isdir("obj") and os.path.exists("obj/matches.pkl")
+            and os.path.exists("obj/participants.pkl")):
+        if not os.path.isdir("obj"):
+            os.mkdir("obj", exist_ok=True)
+        import save_tourneys
+        save_tourneys.main()
     read_tournaments()
     for match in all_matches:
         parse_match(match)

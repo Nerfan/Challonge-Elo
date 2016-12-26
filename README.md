@@ -35,15 +35,15 @@ Thanks also to GitHub user russ- for creating [pychallonge](https://github.com/r
 
 3. Then, in readTourney.py edit the list of tournaments. The variable `TOURNAMENT_IDS_SEPARATED_BY_COMMAS` represents this list. Spaces are optional in the listing.
 
-4. One the tournament ids are entered, run `$ ./save_tournaments.py`.
+4. OPTIONAL: One the tournament ids are entered, run `$ ./save_tournaments.py`. If this is your first time running the program, this step is unnecessary. When you run `./calculate_elos.py`, Python will see that the files do not exist yet, and will automatically call `./save_tourneys.py`. If you wish to update the list of tournaments, this step is necessary.
 
-5. After that, you could be good to simply run `$ ./calculate_elos.py`, and elo rankings will be displayed and saved to elos.txt.
+5. After that, you should be good to simply run `$ ./calculate_elos.py`, and elo rankings will be displayed and saved to elos.txt.
 
 6. If you would like to see a specific player's head-to-head records against all other players, type their name when prompted. If you would like to see details (match scores, dates) about their head-to-head with another specific player, enter their name when prompted. No input will back out of either prompt.
 
 ## Additional Configuration
 
-The DEFAULT_ELO variable in readTourney.py can be adjusted as you wish in order to change the starting elo for new players.
+The `DEFAULT_ELO` variable in readTourney.py can be adjusted as you wish in order to change the starting elo for new players.
 
 The function calculateWin in player.py can be changed as you like. For example, you can change the k value to have a larger fluctuation in elos following a match. The entire formula could be changed, though it must still take arguments for elos befrore calculations and must return a tuple of the resulting elos.
 
