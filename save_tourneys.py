@@ -28,9 +28,12 @@ from tournamentlist import tourneys # And again, same case as aliases
 # enter wfw6r2aw as a string into the list.
 
 # List of all participants in all tournaments
-# These are the raw json objects, so no stuff like aliases have been applied
+# This is a list of lists; each list represents a tournament
+# and the objects within represent a player.
 raw_participants = []
 # List of all matches
+# This is a list of lists; each list represents a tournament
+# and the objects within represent a match.
 all_matches = []
 
 
@@ -50,12 +53,10 @@ def read_tourney(tourney_id):
     matches = challonge.matches.index(tournament["id"])
 
     # Go through participants
-    for participant in participants:
-        raw_participants.append(participant)
+    raw_participants.append(participants)
 
     # Go through matches
-    for match in matches:
-        all_matches.append(match)
+    all_matches.append(matches)
 
 def main():
     """

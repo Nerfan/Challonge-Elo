@@ -23,6 +23,8 @@ players_by_name = {}
 # Allows players to be accessed by ID
 names_by_id = {}
 # List of all matches
+# This is a list of lists; each list represents a tournament
+# and the objects within represent a match.
 all_matches = []
 
 def read_tournaments():
@@ -41,22 +43,26 @@ def read_tournaments():
     with open("obj/matches.pkl", "rb") as f:
         all_matches = pickle.load(f)
     # Go through participants
-    for participant in participants:
-        # Normalize all names
-        name = participant["display-name"].upper()
-        # Check for known aliases
-        if name in aliases:
-            name = aliases[name]
-        # Add to a dictionary; key is id; value is name (string, all caps)
-        names_by_id[participant["id"]] = name
-        # If this is a new player, create a Player object to represent them
-        if not name in players_by_name:
-            players_by_name[name] = Player(name, DEFAULT_ELO, 0, 0, 0)
-        # TODO need to change this; tournaments should be processed individually
-        # If the player placed, add their winnings to the object
-        # Done here because the placing is in the player json object,
-        # which is not used after this.
-        #players_by_name[name].wonTourney(players, participant["final-rank"])
+    for participantlist in participants:
+        players = 0
+        for participant in participantlist:
+            players += 1
+        for participant in participantlist:
+            # Normalize all names
+            name = participant["display-name"].upper()
+            # Check for known aliases
+            if name in aliases:
+                name = aliases[name]
+            # Add to a dictionary; key is id; value is name (string, all caps)
+            names_by_id[participant["id"]] = name
+            # If this is a new player, create a Player object to represent them
+            if not name in players_by_name:
+                players_by_name[name] = Player(name, DEFAULT_ELO, 0, 0, 0)
+            # TODO need to change this; tournaments should be processed individually
+            # If the player placed, add their winnings to the object
+            # Done here because the placing is in the player json object,
+            # which is not used after this.
+            players_by_name[name].wonTourney(players, participant["final-rank"])
 
 def parse_match(match):
     """
@@ -197,8 +203,9 @@ def init():
         import save_tourneys
         save_tourneys.main()
     read_tournaments()
-    for match in all_matches:
-        parse_match(match)
+    for tournament in all_matches:
+        for match in tournament:
+            parse_match(match)
 
 def elos():
     """
@@ -264,3 +271,4 @@ if __name__ == "__main__":
     init()
     elos()
     h2h()
+    tomorrow()
