@@ -4,8 +4,14 @@ Provides a class for information to be stored about players
 SEASON1 = False
 
 class Player():
+    """
+    Represent a player who participated in challonge tournaments.
 
-    def __init__(self, name, elo, won, played, winloss, winnings):
+    Stores information such as name, elo, games played, etc.
+    """
+
+
+    def __init__(self, name, elo, won, played, winnings):
         """
         Constructor method
 
@@ -15,17 +21,15 @@ class Player():
             won (int): Number of games won
             played (int): Number of games played
         """
-        self.name=name
-        self.elo=float(elo)
-        self.won=won
-        self.played=played
-        self.winloss=winloss
+        self.name = name
+        self.elo = float(elo)
+        self.won = won
+        self.played = played
         self.winnings = winnings
-
         # Dictionary, keys are Player objects,
         # values are lists of Match json objects
-        self.h2hwins={}
-        self.h2hlosses={}
+        self.h2hwins = {}
+        self.h2hlosses = {}
 
     def calculateWin(self, loser, score="1-0"):
         """
@@ -34,9 +38,8 @@ class Player():
         Args:
             loser (Player): Player that lost the game
         """
-        self.played+=1
-        self.won+=1
-        self.winloss = (self.won/self.played)
+        self.played += 1
+        self.won += 1
         #k = 64 * (self.won/self.played)
         k = 32
         R1 = 10**(self.elo/400)
@@ -55,7 +58,7 @@ class Player():
         if score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
-        self.elo=self.elo + k*(result-E1)
+        self.elo = self.elo + k*(result-E1)
 
     def calculateLoss(self, winner, score="0-1"):
         """
@@ -64,8 +67,7 @@ class Player():
         Args:
             winner (Player): Player that won the game
         """
-        self.played+=1
-        self.winloss = (self.won/self.played)
+        self.played += 1
         #k = 64 *((self.played-self.won)/self.played)
         k = 32
         R1 = 10**(winner.elo/400)
@@ -84,7 +86,7 @@ class Player():
         if score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
-        self.elo=self.elo + k*(result-E2)
+        self.elo = self.elo + k*(result-E2)
 
     def __str__(self):
         """
@@ -97,7 +99,7 @@ class Player():
                 " " + "{:0>4.0f}".format(self.elo) + \
                 " " + "{:>4d}".format(self.won) + \
                 " " + "{:>4d}".format(self.played) + \
-                "   " + "{:0>4.3f}".format(self.winloss) + \
+                "   " + "{:0>4.3f}".format(self.won/self.played) + \
                 "   " + "{:>6.2f}".format(self.winnings))
 
     def wonTourney(self, entrants, place):
