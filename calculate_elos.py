@@ -101,7 +101,7 @@ def print_elos():
     Print a sorted list of players in order from highest to lowest elo.
     """
     print("Elos of all players in descending order:")
-    print("NAME                  ELO    W    G")
+    print("NAME                  ELO    W    G    W/L      $$$")
     for player in sorted(list(players_by_name.values()),
                          key=lambda x: x.elo, reverse=True):
         print(player)
@@ -248,7 +248,7 @@ def tomorrow():
         p1 = input("Enter winner: ")
         p1 = p1.upper()
         if p1 == "":
-            break;
+            break
         if p1 not in players_by_name:
             print("Error: " + p1 + " not found.\n")
             continue
@@ -256,6 +256,9 @@ def tomorrow():
         p2 = p2.upper()
         if p2 not in players_by_name:
             print("Error: " + p2 + " not found.\n")
+            continue
+        if p1 == p2:
+            print("Error: The winner and loser cannot be the same person.")
             continue
         score = input("Enter set result: ")
         if score not in ["2-0", "3-1", "2-1", "3-2", "3-0"]:
