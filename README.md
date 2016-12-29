@@ -6,7 +6,7 @@ Many thanks to the good people at [challonge](http://challonge.com) for providin
 
 Thanks also to GitHub user russ- for creating [pychallonge](https://github.com/russ-/pychallonge), a module for python that makes the challonge API a breeze to work with. That repository is the source of the challonge folder in this project.
 
-Authors: Jeremy Lefurge (@Nerfan) and Scott Csefai (@swc19)
+Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai ([swc19](https://github.com/swc19))
 ## Usage
 
 1. Assuming that you already have Python 3.5 installed, the first step is to clone this repository.
