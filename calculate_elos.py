@@ -199,7 +199,7 @@ def init():
     if not (os.path.isdir("obj") and os.path.exists("obj/matches.pkl")
             and os.path.exists("obj/participants.pkl")):
         if not os.path.isdir("obj"):
-            os.mkdir("obj", exist_ok=True)
+            os.mkdir("obj")
         import save_tourneys
         save_tourneys.main()
     read_tournaments()
@@ -247,6 +247,8 @@ def tomorrow():
     while True:
         p1 = input("Enter winner: ")
         p1 = p1.upper()
+        if p1 == "":
+            break;
         if p1 not in players_by_name:
             print("Error: " + p1 + " not found.\n")
             continue
