@@ -4,9 +4,10 @@
 
 Many thanks to the good people at [challonge](http://challonge.com) for providing a fantastic platform to run tournaments from and for developing their API.
 
-Thanks also to GitHub user russ- for creating [pychallonge](https://github.com/russ-/pychallonge), a module for python that makes the challonge API a breeze to work with. That repository is the source of the challonge folder in this project.
+Thanks also to GitHub user [russ-](https://github.com/russ-) for creating [pychallonge](https://github.com/russ-/pychallonge), a module for python that makes the challonge API a breeze to work with. That repository is the source of the challonge folder in this project.
 
 Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai ([swc19](https://github.com/swc19))
+
 ## Usage
 
 1. Assuming that you already have Python 3.5 installed, the first step is to clone this repository.
@@ -32,7 +33,7 @@ Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai (
    import setCredentials
    ```
 
-   with the second line of the code block above.
+   with the code block above.
 
 3. Then, in readTourney.py edit the list of tournaments. The variable `TOURNAMENT_IDS_SEPARATED_BY_COMMAS` represents this list. Spaces are optional in the listing.
 
