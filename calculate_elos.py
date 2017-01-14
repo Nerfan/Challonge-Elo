@@ -58,7 +58,6 @@ def read_tournaments():
             # If this is a new player, create a Player object to represent them
             if not name in players_by_name:
                 players_by_name[name] = Player(name, DEFAULT_ELO, 0, 0, 0)
-            # TODO need to change this; tournaments should be processed individually
             # If the player placed, add their winnings to the object
             # Done here because the placing is in the player json object,
             # which is not used after this.
@@ -220,7 +219,7 @@ def h2h():
     Ask the user if they would like to see head-to-head statistics.
     """
     while True: # Loop until we break out of it
-        playername = input("Whose records would you like to see? ")
+        playername = input("Whose head-to-head stats would you like to see? ")
         playername = playername.upper()
         if playername == "": # Break on no input
             break
@@ -245,14 +244,14 @@ def tomorrow():
     Ask the user if they would like to see how matches would change elos.
     """
     while True:
-        p1 = input("Enter winner: ")
+        p1 = input("Enter winner of hypothetical match: ")
         p1 = p1.upper()
         if p1 == "":
             break
         if p1 not in players_by_name:
             print("Error: " + p1 + " not found.\n")
             continue
-        p2 = input("Enter loser: ")
+        p2 = input("Enter loser of hypothetical match: ")
         p2 = p2.upper()
         if p2 not in players_by_name:
             print("Error: " + p2 + " not found.\n")
@@ -275,5 +274,16 @@ def tomorrow():
 if __name__ == "__main__":
     init()
     elos()
-    h2h()
-    tomorrow()
+    while True:
+        selection = input("What would you like to do?\n" \
+                          + "\t(H)ead-to-head details\n" \
+                          + "\t(T)omorrow elos\n" \
+                          + "\t(Q)uit\n")
+        if selection == "":
+            break
+        if selection.upper()[0] in "Q":
+            break
+        if selection.upper()[0] == "H":
+            h2h()
+        if selection.upper()[0] == "T":
+            tomorrow()
