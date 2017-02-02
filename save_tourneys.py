@@ -35,6 +35,10 @@ raw_participants = []
 # This is a list of lists; each list represents a tournament
 # and the objects within represent a match.
 all_matches = []
+# Both of the above lists are in the same format.
+# i.e. raw_participants = [t1, t2, ...]
+#      where t1, t2, ... = [p1, p2, ...]
+# Players and matches are grouped by tournament.
 
 
 def read_tourney(tourney_id):
