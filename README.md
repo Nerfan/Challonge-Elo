@@ -35,7 +35,12 @@ Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai (
 
    with the code block above.
 
-3. Then, in readTourney.py edit the list of tournaments. The variable `TOURNAMENT_IDS_SEPARATED_BY_COMMAS` represents this list. Spaces are optional in the listing.
+3. Create a file called `tournamentlist.py`, and inside the file create a list of tournament ids called `tourneys`. For example:
+   ```python
+   tourneys = ["id1", "id2", "account-tourneyid"]
+   ```
+   If the tournaments are from a subdomain on challonge, it should be in the format {subdomain}-{tourney-id} (e.g. 'test-mytourney' for test.challonge.com/mytourney).
+
 
 4. OPTIONAL: One the tournament ids are entered, run `$ ./save_tournaments.py`. If this is your first time running the program, this step is unnecessary. When you run `./calculate_elos.py`, Python will see that the files do not exist yet, and will automatically call `./save_tourneys.py`. If you wish to update the list of tournaments, this step is necessary.
 
@@ -45,9 +50,11 @@ Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai (
 
 ## Additional Configuration
 
-The `DEFAULT_ELO` variable in readTourney.py can be adjusted as you wish in order to change the starting elo for new players.
+The `DEFAULT_ELO` variable in `readTourney.py` can be adjusted as you wish in order to change the starting elo for new players.
 
-The function calculateWin in player.py can be changed as you like. For example, you can change the k value to have a larger fluctuation in elos following a match. The entire formula could be changed, though it must still take arguments for elos befrore calculations and must return a tuple of the resulting elos.
+If `IGNOREGAMES` is set to `True` in `player.py`, then all set scores are treated the same (i.e. a 3-2 win is the same as a 3-0 win).
+
+The function calculateWin in player.py can be changed as you like. For example, you can change the k value to have a larger fluctuation in elos following a match. The entire formula could be changed, though it must still take arguments for elos befrore calculations and must return a tuple of the resulting elos. THIS IS NO LONGER ACCURATE BUT I NEED TO REWRITE IT
 
 If you do not wish for elos to be displayed or saved, comment out the respective line at the end of readTourney.py.
 
