@@ -1,7 +1,7 @@
 """
 Provides a class for information to be stored about players
 """
-SEASON1 = False
+IGNOREGAMES = False
 
 class Player():
     """
@@ -45,14 +45,14 @@ class Player():
         R1 = 10**(self.elo/400)
         R2 = 10**(loser.elo/400)
         E1 = R1/(R1+R2)
-        result = 1.25
-        if not SEASON1:
+        result = 1
+        if not IGNOREGAMES:
             if score in ["2-0", "3-1", "1-0", "0-1", "1-3", "0-2"]:
-                result = 1.25
-            elif score in ["2-1", "3-2", "1-2", "2-3"]:
                 result = 1
+            elif score in ["2-1", "3-2", "1-2", "2-3"]:
+                result = .8
             elif score in ["3-0", "0-3"]:
-                result = 1.5
+                result = 1.25
             else:
                 return
         if score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
@@ -74,11 +74,11 @@ class Player():
         R2 = 10**(self.elo/400)
         E2 = R2/(R1+R2)
         result = 0
-        if not SEASON1:
+        if not IGNOREGAMES:
             if score in ["2-0", "3-1", "1-0", "0-1", "1-3", "0-2"]:
                 result = 0
             elif score in ["2-1", "3-2", "1-2", "2-3"]:
-                result = .33
+                result = .2
             elif score in ["3-0", "0-3"]:
                 result = -0.25
             else:
