@@ -18,7 +18,7 @@ from aliases import aliases # Another file I made with a dictionary
 DEFAULT_ELO = 1200 # Starting elo for players
 
 # Global dictionary to contain elos
-# Keys are playernames in all caps, values are elos
+# Keys are playernames in all caps, values are Player objects
 players_by_name = {}
 # Allows players to be accessed by ID
 names_by_id = {}
@@ -29,7 +29,7 @@ all_matches = []
 
 def read_tournaments():
     """
-    Read information from pickle files.
+    Read information from pickle files. Populate player dictionaries.
 
     Assumes that the files exist as created by save_tournaments.py.
     Initializes players_by_name, names_by_id, and all_matches.
@@ -45,6 +45,7 @@ def read_tournaments():
     # Go through participants
     for participantlist in participants:
         players = 0
+        # Check how many players are in the tournament being parsed
         for participant in participantlist:
             players += 1
         for participant in participantlist:
@@ -62,6 +63,8 @@ def read_tournaments():
             # Done here because the placing is in the player json object,
             # which is not used after this.
             players_by_name[name].wonTourney(players, participant["final-rank"])
+            # Add one tournament to the player's record.
+            players_by_name[name].tournaments += 1
 
 def parse_match(match):
     """
@@ -88,12 +91,6 @@ def parse_match(match):
         winner.calculateWin(loser, score)
         loser.calculateLoss(winner, score)
         # Record match for head-to-head
-        if loser not in winner.h2hwins:
-            winner.h2hwins[loser] = []
-        winner.h2hwins[loser].append(match)
-        if winner not in loser.h2hlosses:
-            loser.h2hlosses[winner] = []
-        loser.h2hlosses[winner].append(match)
 
 def print_elos():
     """
@@ -144,6 +141,26 @@ def read_elos(filename):
                                            int(temp[-3]),
                                            float(temp[-1]))
     file.close()
+
+def save_players():
+    """
+    Save all player data to a file.
+
+    This is probably for later sorting or working with the data.
+    """
+    with open("obj/players.pkl", "wb") as f:
+        pickle.dump(list(players_by_name.values()), f, pickle.HIGHEST_PROTOCOL)
+
+def read_players():
+    """
+    Read player data from a file.
+    """
+    players_list = []
+    with open("obj/players.pkl", "rb") as f:
+        players_list = pickle.load(f)
+    for player in players_list:
+        name = player.name
+        players_by_name[name] = player
 
 def elo_tomorrow(winner, loser, score):
     """
@@ -212,6 +229,7 @@ def elos():
     """
     print_elos()
     save_elos()
+    save_players()
     # TODO stuff with filtering
 
 def h2h():

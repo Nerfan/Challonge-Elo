@@ -2,12 +2,27 @@
 Provides a class for information to be stored about players
 """
 IGNOREGAMES = False
+# The amount charged for entry into the tournament
+ENTRYFEE = 2
 
 class Player():
     """
     Represent a player who participated in challonge tournaments.
 
     Stores information such as name, elo, games played, etc.
+    """
+
+    """
+    Fields include:
+    name            str
+    elo             int
+    won             int
+    played          int
+    winnings        float
+    placings        list of ints
+    tournaments     int
+    h2hwins         dict of lists of match json objects
+    h2hlosses       dict of lists of match json objects
     """
 
 
@@ -26,6 +41,7 @@ class Player():
         self.won = won
         self.played = played
         self.winnings = winnings
+        self.tournaments = 0
         # Dictionary, keys are Player objects,
         # values are lists of Match json objects
         self.h2hwins = {}
@@ -59,6 +75,9 @@ class Player():
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
         self.elo = self.elo + k*(result-E1)
+        if loser.name not in h2hwins:
+            h2hwins[loser.name] = []
+        h2hwins[loser].append(match)
 
     def calculateLoss(self, winner, score="0-1"):
         """
@@ -87,6 +106,9 @@ class Player():
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
         self.elo = self.elo + k*(result-E2)
+        if winner.name not in h2hlosses:
+            h2hlosses[winner.name] = []
+        h2hlosses[winner.name].append(match)
 
     def __str__(self):
         """
@@ -110,12 +132,13 @@ class Player():
         :int param place: 1/2/3 of the player.
         :return: None
         """
+        placings.append(place)
         if place == 1:
-            self.winnings += ((entrants * 2) * .6)
+            self.winnings += ((entrants * ENTRYFEE) * .6)
         elif place == 2:
-            self.winnings += ((entrants * 2) * .3)
+            self.winnings += ((entrants * ENTRYFEE) * .3)
         elif place == 3:
-            self.winnings += ((entrants * 2) * .1)
+            self.winnings += ((entrants * ENTRYFEE) * .1)
         else:
             return
 
@@ -162,12 +185,14 @@ class Player():
         string += "Wins:\n"
         if other_player in self.h2hwins:
             for match in self.h2hwins[other_player]:
+                # Displays date and game count
                 string += str(match["started-at"])[0:10] + ": " \
                           + str(match["scores-csv"])
                 string += "\n"
         string += "Losses:\n"
         if other_player in self.h2hlosses:
             for match in self.h2hlosses[other_player]:
+                # Displays date and game count
                 string += str(match["started-at"])[0:10] + ": " \
                           + str(match["scores-csv"])
                 string += "\n"
