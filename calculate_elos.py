@@ -77,19 +77,11 @@ def parse_match(match):
         match (json object): Match to take into account to change elos
     """
     if match["winner-id"] != None:
-        if match["scores-csv"] != None:
-            score = match["scores-csv"]
-        else:
-            score = "1-0"
-        # Make sure score is within a reasonable range to protect against dq's
-        if score not in ["1-0", "2-0", "3-0", "2-1", "3-1", "3-2",
-                         "0-1", "0-2", "0-3", "1-2", "1-3", "2-3"]:
-            return
         winner = players_by_name[names_by_id[match["winner-id"]]]
         loser = players_by_name[names_by_id[match["loser-id"]]]
         # Calculate elo changes
-        winner.calculateWin(loser, score)
-        loser.calculateLoss(winner, score)
+        winner.calculateWin(loser, match)
+        loser.calculateLoss(winner, match)
         # Record match for head-to-head
 
 def print_elos():

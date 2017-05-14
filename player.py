@@ -41,13 +41,14 @@ class Player():
         self.won = won
         self.played = played
         self.winnings = winnings
+        self.placings = []
         self.tournaments = 0
         # Dictionary, keys are Player objects,
         # values are lists of Match json objects
         self.h2hwins = {}
         self.h2hlosses = {}
 
-    def calculateWin(self, loser, score="1-0"):
+    def calculateWin(self, loser, match):
         """
         Calculate and apply a change in elo based on a win
 
@@ -62,6 +63,10 @@ class Player():
         R2 = 10**(loser.elo/400)
         E1 = R1/(R1+R2)
         result = 1
+        if match["scores-csv"] != None:
+            score = match["scores-csv"]
+        else:
+            score = "1-0"
         if not IGNOREGAMES:
             if score in ["2-0", "3-1", "1-0", "0-1", "1-3", "0-2"]:
                 result = 1
@@ -75,11 +80,11 @@ class Player():
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
         self.elo = self.elo + k*(result-E1)
-        if loser.name not in h2hwins:
-            h2hwins[loser.name] = []
-        h2hwins[loser].append(match)
+        if loser not in self.h2hwins:
+            self.h2hwins[loser] = []
+        self.h2hwins[loser].append(match)
 
-    def calculateLoss(self, winner, score="0-1"):
+    def calculateLoss(self, winner, match):
         """
         Calculate and apply a change in elo based on a loss
 
@@ -93,6 +98,10 @@ class Player():
         R2 = 10**(self.elo/400)
         E2 = R2/(R1+R2)
         result = 0
+        if match["scores-csv"] != None:
+            score = match["scores-csv"]
+        else:
+            score = "1-0"
         if not IGNOREGAMES:
             if score in ["2-0", "3-1", "1-0", "0-1", "1-3", "0-2"]:
                 result = 0
@@ -106,9 +115,9 @@ class Player():
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
         self.elo = self.elo + k*(result-E2)
-        if winner.name not in h2hlosses:
-            h2hlosses[winner.name] = []
-        h2hlosses[winner.name].append(match)
+        if winner not in self.h2hlosses:
+            self.h2hlosses[winner] = []
+        self.h2hlosses[winner].append(match)
 
     def __str__(self):
         """
@@ -132,7 +141,7 @@ class Player():
         :int param place: 1/2/3 of the player.
         :return: None
         """
-        placings.append(place)
+        self.placings.append(place)
         if place == 1:
             self.winnings += ((entrants * ENTRYFEE) * .6)
         elif place == 2:
