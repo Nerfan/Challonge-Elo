@@ -126,12 +126,18 @@ class Player():
         Returns:
             str: Formatted player stats
         """
+        average = 0
+        for placing in self.placings:
+            average += placing
+        average = average/len(self.placings)
         return ("{:20s}".format(self.name) + \
                 " " + "{:0>4.0f}".format(self.elo) + \
                 " " + "{:>4d}".format(self.won) + \
                 " " + "{:>4d}".format(self.played) + \
                 "   " + "{:0>4.3f}".format(self.won/self.played) + \
-                "   " + "{:>6.2f}".format(self.winnings))
+                "   " + "{:>6.2f}".format(self.winnings) + \
+                "   " + "{:>4.3f}".format(average)
+                )
 
     def wonTourney(self, entrants, place):
         """
