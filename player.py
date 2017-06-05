@@ -4,6 +4,8 @@ Provides a class for information to be stored about players
 IGNOREGAMES = False
 # The amount charged for entry into the tournament
 ENTRYFEE = 2
+# The elo requirement for a win to be good/bad
+NOTABLEELO = -80
 
 class Player():
     """
@@ -211,6 +213,35 @@ class Player():
                 string += str(match["started-at"])[0:10] + ": " \
                           + str(match["scores-csv"])
                 string += "\n"
+        return string
+
+    def summary(self):
+        """
+        Returns a string summarizing the player, including
+        placings, notable wins, and notable losses.
+
+        Returns:
+            str: Summary of player
+        """
+        # Player name
+        string = "Player: " + self.name + "\n"
+        # Placings
+        string += "Placings: "
+        for placing in self.placings:
+            string += str(placing) + ", "
+        string = string[:-2] + "\n"
+        # Notable wins
+        string += "Notable wins: "
+        for player in self.h2hwins:
+            if player.elo >= self.elo + NOTABLEELO:
+                string += player.name + ", "
+        string = string[:-2] + "\n"
+        # Notable losses
+        string += "Notable losses: "
+        for player in self.h2hlosses:
+            if player.elo <= self.elo + NOTABLEELO:
+                string += player.name + ", "
+        string = string[:-2] + "\n"
         return string
 
     __repr__ = __str__

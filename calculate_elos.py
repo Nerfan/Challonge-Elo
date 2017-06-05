@@ -280,6 +280,17 @@ def tomorrow():
               + ", and would be: " + "{:0>4.0f}".format(new_elo[1]))
         print()
 
+def summarize():
+    """
+    Print summaries of the top 15 players.
+    """
+    i = 0
+    for player in sorted(list(players_by_name.values()),
+                         key=lambda x: x.elo, reverse=True):
+        print(player.summary())
+        i += 1
+        if i >= 15:
+            break
 
 if __name__ == "__main__":
     init()
@@ -288,6 +299,7 @@ if __name__ == "__main__":
         selection = input("What would you like to do?\n" \
                           + "\t(H)ead-to-head details\n" \
                           + "\t(T)omorrow elos\n" \
+                          + "\t(S)ummarize top 15\n" \
                           + "\t(Q)uit\n")
         if selection == "":
             break
@@ -297,3 +309,5 @@ if __name__ == "__main__":
             h2h()
         if selection.upper()[0] == "T":
             tomorrow()
+        if selection.upper()[0] == "S":
+            summarize()
