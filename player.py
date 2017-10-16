@@ -137,7 +137,6 @@ class Player():
                 " " + "{:>4d}".format(self.won) + \
                 " " + "{:>4d}".format(self.played) + \
                 "   " + "{:0>4.3f}".format(self.won/self.played) + \
-                "   " + "{:>6.2f}".format(self.winnings) + \
                 "   " + "{:>4.3f}".format(average)
                 )
 

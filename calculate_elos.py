@@ -89,7 +89,7 @@ def print_elos():
     Print a sorted list of players in order from highest to lowest elo.
     """
     print("Elos of all players in descending order:")
-    print("NAME                  ELO    W    G    W/L      $$$")
+    print("NAME                  ELO    W    G    W/L      AVG")
     for player in sorted(list(players_by_name.values()),
                          key=lambda x: x.elo, reverse=True):
         print(player)
