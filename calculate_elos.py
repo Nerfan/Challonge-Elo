@@ -10,6 +10,7 @@ import os
 import os.path
 import pickle
 from player import Player
+from spreadsheet_maker import exportSpreadsheet
 
 from aliases import aliases # Another file I made with a dictionary
 # of replacements for names
@@ -295,6 +296,7 @@ def summarize():
 if __name__ == "__main__":
     init()
     elos()
+    exportSpreadsheet(players_by_name.values())
     while True:
         selection = input("What would you like to do?\n" \
                           + "\t(H)ead-to-head details\n" \
