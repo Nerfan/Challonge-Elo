@@ -1,3 +1,4 @@
+#!/usr/bin/python3.5
 """
 Make a matchup spreadsheet of players.
 
@@ -7,16 +8,16 @@ HEAVY work in progress
 
 import xlsxwriter
 
-def exportSpreadsheet(players):
+def exportSpreadsheet(players, cutoff=15):
     """
-    Export a matchup chart of the top 15 players.
+    Export a matchup chart of the top players.
+
+    Write directly to a file named "MU Chart.xlsx."
 
     Args:
         players:    list of Player objects
-    Returns:
-        a file object, the exported spreadsheet
+        cutoff:     int, number of players to include
     """
-    NUMPLAYERS = 15
     workbook = xlsxwriter.Workbook("MU Chart.xlsx")
     worksheet = workbook.add_worksheet()
     # Create an array for easy access to ratios, this will be changed later
@@ -30,7 +31,7 @@ def exportSpreadsheet(players):
     # Loop through all players
     i = 0
     for player in sortedPlayers:
-        if i >= NUMPLAYERS:
+        if i >= cutoff:
             break
         ratios = {}
         # Loop through each individual player's head-to-head records
@@ -46,22 +47,29 @@ def exportSpreadsheet(players):
             ratios[opponent.name] = (wins, losses)
         i += 1
         h2h[player.name] = ratios
-    row = 0
-    col = 0
-    for row in range(0, NUMPLAYERS):
-        for col in range(0, NUMPLAYERS):
-            player_name = sortedPlayers[row].name
-            opponent_name = sortedPlayers[col].name
-            worksheet.write(row, col, str(h2h[player_name][opponent_name]))
+    # Create color formats for the cells
+    # TODO better gradients
+    winning = workbook.add_format({"bg_color" : "green"})
+    losing = workbook.add_format({"bg_color" : "red"})
+    tied = workbook.add_format({"bg_color" : "yellow"})
+    # ore wa kage
+    againstSelf = workbook.add_format({"bg_color" : "gray"})
+    # Write to the spreadsheet
+    for row in range(1, cutoff+1):
+        player_name = sortedPlayers[row-1].name
+        worksheet.write(row, 0, player_name)
+        worksheet.write(0, row, player_name)
+        for col in range(1, cutoff+1):
+            opponent_name = sortedPlayers[col-1].name
+            ratio = h2h[player_name][opponent_name]
+            if row == col:
+                worksheet.write(row, col, "", againstSelf)
+            elif ratio[0] > ratio[1]:
+                worksheet.write(row, col, str(ratio), winning)
+            elif ratio[1] > ratio[0]:
+                worksheet.write(row, col, str(ratio), losing)
+            elif ratio[0] == 0 and ratio [1] == 0:
+                worksheet.write(row, col, str(ratio))
+            else:
+                worksheet.write(row, col, str(ratio), tied)
     workbook.close()
-
-
-"""
-for each player:
-    get matchups for that player, save to a list of dictionaries where the value is a tuple of (win, loss)
-
-structure:
-    {name : [{opponent_name : (wins, losses)}]}
-For each player in top 15:
-    use other top 15 
-"""
