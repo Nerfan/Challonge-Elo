@@ -18,7 +18,7 @@ def exportSpreadsheet(players, cutoff=15):
         players:    list of Player objects
         cutoff:     int, number of players to include
     """
-    workbook = xlsxwriter.Workbook("MU Chart.xlsx")
+    workbook = xlsxwriter.Workbook("output/MU Chart.xlsx")
     worksheet = workbook.add_worksheet()
     # Create an array for easy access to ratios, this will be changed later
     # to be in-line

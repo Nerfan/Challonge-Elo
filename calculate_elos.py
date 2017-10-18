@@ -104,7 +104,7 @@ def save_elos():
     For example:
     JOHN DOE            1200
     """
-    file = open("elos.txt", "w")
+    file = open("output/elos.txt", "w")
     file.truncate()
     for player in sorted(list(players_by_name.values()),
                          key=lambda x: x.elo, reverse=True):
