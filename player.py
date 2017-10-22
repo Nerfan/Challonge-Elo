@@ -132,11 +132,15 @@ class Player():
         for placing in self.placings:
             average += placing
         average = average/len(self.placings)
+        if self.played == 0:
+            playedtemp = 1
+        else:
+            playedtemp = self.played
         return ("{:20s}".format(self.name) + \
                 " " + "{:0>4.0f}".format(self.elo) + \
                 " " + "{:>4d}".format(self.won) + \
                 " " + "{:>4d}".format(self.played) + \
-                "   " + "{:0>4.3f}".format(self.won/self.played) + \
+                "   " + "{:0>4.3f}".format(self.won/playedtemp) + \
                 "   " + "{:>4.3f}".format(average)
                 )
 
