@@ -23,8 +23,12 @@ class Player():
     winnings        float
     placings        list of ints
     tournaments     int
-    h2hwins         dict of lists of match json objects
-    h2hlosses       dict of lists of match json objects
+    h2hwins         dict
+                    key: player object
+                    value: list of match json objects
+    h2hlosses       dict
+                    key: player object
+                    value: list of match json objects
     """
 
 
@@ -58,7 +62,6 @@ class Player():
             loser (Player): Player that lost the game
         """
         #k = 64 * (self.won/self.played)
-        k = 32
         R1 = 10**(self.elo/400)
         R2 = 10**(loser.elo/400)
         E1 = R1/(R1+R2)
@@ -81,7 +84,7 @@ class Player():
             return
         self.played += 1
         self.won += 1
-        self.elo = self.elo + k*(result-E1)
+        self.elo = self.elo + self.kconst()*(result-E1)
         if loser not in self.h2hwins:
             self.h2hwins[loser] = []
         self.h2hwins[loser].append(match)
@@ -94,7 +97,6 @@ class Player():
             winner (Player): Player that won the game
         """
         #k = 64 *((self.played-self.won)/self.played)
-        k = 32
         R1 = 10**(winner.elo/400)
         R2 = 10**(self.elo/400)
         E2 = R2/(R1+R2)
@@ -116,7 +118,7 @@ class Player():
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
         self.played += 1
-        self.elo = self.elo + k*(result-E2)
+        self.elo = self.elo + self.kconst()*(result-E2)
         if winner not in self.h2hlosses:
             self.h2hlosses[winner] = []
         self.h2hlosses[winner].append(match)
@@ -220,7 +222,7 @@ class Player():
 
     def summary(self):
         """
-        Returns a string summarizing the player, including
+        Return a string summarizing the player, including
         placings, notable wins, and notable losses.
 
         Returns:
@@ -246,5 +248,14 @@ class Player():
                 string += player.name + ", "
         string = string[:-2] + "\n"
         return string
+
+    def kconst(self):
+        """
+        Return the value of the constant k for elo calculation.
+
+        Returns:
+            int: Value of constant to use to calculate elo
+        """
+        return 64
 
     __repr__ = __str__
