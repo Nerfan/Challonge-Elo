@@ -57,8 +57,6 @@ class Player():
         Args:
             loser (Player): Player that lost the game
         """
-        self.played += 1
-        self.won += 1
         #k = 64 * (self.won/self.played)
         k = 32
         R1 = 10**(self.elo/400)
@@ -78,9 +76,11 @@ class Player():
                 result = 1.25
             else:
                 return
-        if score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
+        elif score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
+        self.played += 1
+        self.won += 1
         self.elo = self.elo + k*(result-E1)
         if loser not in self.h2hwins:
             self.h2hwins[loser] = []
@@ -93,7 +93,6 @@ class Player():
         Args:
             winner (Player): Player that won the game
         """
-        self.played += 1
         #k = 64 *((self.played-self.won)/self.played)
         k = 32
         R1 = 10**(winner.elo/400)
@@ -113,9 +112,10 @@ class Player():
                 result = -0.25
             else:
                 return
-        if score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
+        elif score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
                          "1-3", "0-1", "1-2", "2-3,", "0-3"]:
             return
+        self.played += 1
         self.elo = self.elo + k*(result-E2)
         if winner not in self.h2hlosses:
             self.h2hlosses[winner] = []
