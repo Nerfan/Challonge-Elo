@@ -80,7 +80,7 @@ class Player():
             else:
                 return
         elif score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
-                         "1-3", "0-1", "1-2", "2-3,", "0-3"]:
+                         "1-3", "0-1", "1-2", "2-3", "0-3"]:
             return
         self.played += 1
         self.won += 1
@@ -115,7 +115,7 @@ class Player():
             else:
                 return
         elif score not in ["2-0", "3-1", "1-0", "2-1", "3-2", "3-0", "0-2", \
-                         "1-3", "0-1", "1-2", "2-3,", "0-3"]:
+                         "1-3", "0-1", "1-2", "2-3", "0-3"]:
             return
         self.played += 1
         self.elo = self.elo + self.kconst()*(result-E2)
