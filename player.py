@@ -1,6 +1,8 @@
 """
 Provides a class for information to be stored about players
 """
+import math
+
 IGNOREGAMES = False
 # The amount charged for entry into the tournament
 ENTRYFEE = 2
@@ -256,6 +258,15 @@ class Player():
         Returns:
             int: Value of constant to use to calculate elo
         """
-        return 64
+        if self.elo <= 1200:
+            return 60
+        if self.elo <= 1300:
+            return 40
+        if self.elo <= 1400:
+            return 30
+        if self.elo <= 1500:
+            return 20
+        return 10
+        #return 96/math.sqrt(self.played)
 
     __repr__ = __str__
