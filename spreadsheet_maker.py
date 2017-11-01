@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3
 """
 Make a matchup spreadsheet of players.
 

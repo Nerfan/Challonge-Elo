@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3
 """
 Takes data from Challonge to calculate elos of players.
 

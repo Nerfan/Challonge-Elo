@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3
 """
 Takes data from Challonge to calculate elos of players.
 
@@ -12,11 +12,15 @@ import pickle
 from player import Player
 from spreadsheet_maker import exportSpreadsheet
 
-from aliases import aliases # Another file I made with a dictionary
+from aliases import aliases  # Another file I made with a dictionary
 # of replacements for names
 # For example, one of the entries is "JEREMY LEFURGE" : "NERFAN"
 
+
 class EloList:
+    """
+    Store a list of elos based on input tournaments, then export the info.
+    """
 
     DEFAULT_ELO = 1200 # Starting elo for players
 
@@ -59,8 +63,8 @@ class EloList:
                     name = aliases[name]
                 # Add to a dictionary; key is id; value is name (string, all caps)
                 self.names_by_id[participant["id"]] = name
-                # If this is a new player, create a Player object to represent them
-                if not name in self.players_by_name:
+                # If this is a new player, create a new Player object
+                if name not in self.players_by_name:
                     self.players_by_name[name] = Player(
                             name, EloList.DEFAULT_ELO, 0, 0, 0)
                 # If the player placed, add their winnings to the object

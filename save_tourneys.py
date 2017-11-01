@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3
 """
 Save the calculated data from a list of tournaments for easy reference.
 
