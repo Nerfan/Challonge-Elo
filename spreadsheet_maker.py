@@ -8,6 +8,7 @@ HEAVY work in progress
 
 import xlsxwriter
 
+
 def exportSpreadsheet(players, cutoff=15):
     """
     Export a matchup chart of the top players.
@@ -62,14 +63,16 @@ def exportSpreadsheet(players, cutoff=15):
         for col in range(1, cutoff+1):
             opponent_name = sortedPlayers[col-1].name
             ratio = h2h[player_name][opponent_name]
+            stringratio = str(ratio[0]) + "-" + str(ratio[1])
             if row == col:
                 worksheet.write(row, col, "", againstSelf)
             elif ratio[0] > ratio[1]:
-                worksheet.write(row, col, str(ratio), winning)
+                worksheet.write(row, col, str(stringratio), winning)
             elif ratio[1] > ratio[0]:
-                worksheet.write(row, col, str(ratio), losing)
-            elif ratio[0] == 0 and ratio [1] == 0:
-                worksheet.write(row, col, str(ratio))
+                worksheet.write(row, col, str(stringratio), losing)
+            elif ratio[0] == 0 and ratio[1] == 0:
+                pass
+                #worksheet.write(row, col, str(stringratio))
             else:
-                worksheet.write(row, col, str(ratio), tied)
+                worksheet.write(row, col, str(stringratio), tied)
     workbook.close()
