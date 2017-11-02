@@ -27,6 +27,9 @@ from tournamentlist import tourneys # And again, same case as aliases
 # For example, if your URL is http://challonge.com/wfw6r2aw,
 # enter wfw6r2aw as a string into the list.
 
+# List of all tournaments
+# Just a list of dicts (i.e. json objects)
+tournaments = []
 # List of all participants in all tournaments
 # This is a list of lists; each list represents a tournament
 # and the objects within represent a player.
@@ -56,6 +59,8 @@ def read_tourney(tourney_id):
     participants = challonge.participants.index(tournament["id"])
     matches = challonge.matches.index(tournament["id"])
 
+    tournaments.append(tournament)
+
     # Go through participants
     raw_participants.append(participants)
 
@@ -68,6 +73,8 @@ def main():
     """
     for tourney in tourneys:
         read_tourney(tourney)
+    with open("obj/tournaments.pkl", "wb") as f:
+        pickle.dump(tournaments, f, pickle.HIGHEST_PROTOCOL)
     with open("obj/participants.pkl", "wb") as f:
         pickle.dump(raw_participants, f, pickle.HIGHEST_PROTOCOL)
     with open("obj/matches.pkl", "wb") as f:

@@ -39,6 +39,16 @@ class EloList:
         """
         self.players_by_name = {}
         self.names_by_id = {}
+        self.tournaments = {}
+
+    def read_tournaments_file(self):
+        """
+        Read obj/tournaments.pkl and create the tournament dictionary.
+        """
+        with open("obj/tournaments.pkl", "rb") as f:
+            tournaments = pickle.load(f)
+        for tournament in tournaments:
+            self.tournaments[tournament["id"]] = tournament
 
     def read_players_file(self):
         """
@@ -66,13 +76,14 @@ class EloList:
                 # If this is a new player, create a new Player object
                 if name not in self.players_by_name:
                     self.players_by_name[name] = Player(
-                            name, EloList.DEFAULT_ELO, 0, 0, 0)
-                # If the player placed, add their winnings to the object
-                # Done here because the placing is in the player json object,
-                # which is not used after this.
-                self.players_by_name[name].wonTourney(players, participant["final-rank"])
-                # Add one tournament to the player's record.
-                self.players_by_name[name].tournaments += 1
+                        name, EloList.DEFAULT_ELO, 0, 0, 0
+                    )
+                # Record the player's performance at the tournament
+                # represented by this participant json object.
+                self.players_by_name[name].record_tourney(
+                    self.tournaments[participant["tournament-id"]],
+                    participant["final-rank"]
+                )
 
     def read_matches_file(self):
         """
@@ -144,6 +155,18 @@ class EloList:
             name = player.name.upper()
             self.players_by_name[name] = player
 
+    def summarize(self):
+        """
+        Print summaries of the top 15 players.
+        """
+        i = 0
+        for player in sorted(list(self.players_by_name.values()),
+                             key=lambda x: x.elo, reverse=True):
+            print(player.summary())
+            i += 1
+            if i >= 15:
+                break
+
     def main(self):
         # Make sure the files to read from actually exist
         if not (os.path.isdir("obj") and os.path.exists("obj/matches.pkl")
@@ -153,12 +176,14 @@ class EloList:
             import save_tourneys
             save_tourneys.main()
         # Read the files and make the appropriate changes
+        self.read_tournaments_file()
         self.read_players_file()
         self.read_matches_file()
         self.write_elos()
         exportSpreadsheet(self.players_by_name.values())
         print("Elos have been saved to \"output/elos.txt\".")
         print("A MU chart of the top 15 players has been saved to \"output/MU Chart.xlsx\".")
+        self.summarize()
 
 
 if __name__ == "__main__":

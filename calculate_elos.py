@@ -294,22 +294,25 @@ def summarize():
             break
 
 if __name__ == "__main__":
-    init()
-    elos()
-    exportSpreadsheet(players_by_name.values())
-    while True:
-        selection = input("What would you like to do?\n" \
-                          + "\t(H)ead-to-head details\n" \
-                          + "\t(T)omorrow elos\n" \
-                          + "\t(S)ummarize top 15\n" \
-                          + "\t(Q)uit\n")
-        if selection == "":
-            break
-        if selection.upper()[0] in "Q":
-            break
-        if selection.upper()[0] == "H":
-            h2h()
-        if selection.upper()[0] == "T":
-            tomorrow()
-        if selection.upper()[0] == "S":
-            summarize()
+    import elo_list
+    el = elo_list.EloList()
+    el.main()
+#    init()
+#    elos()
+#    exportSpreadsheet(players_by_name.values())
+#    while True:
+#        selection = input("What would you like to do?\n" \
+#                          + "\t(H)ead-to-head details\n" \
+#                          + "\t(T)omorrow elos\n" \
+#                          + "\t(S)ummarize top 15\n" \
+#                          + "\t(Q)uit\n")
+#        if selection == "":
+#            break
+#        if selection.upper()[0] in "Q":
+#            break
+#        if selection.upper()[0] == "H":
+#            h2h()
+#        if selection.upper()[0] == "T":
+#            tomorrow()
+#        if selection.upper()[0] == "S":
+#            summarize()

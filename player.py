@@ -1,7 +1,6 @@
 """
 Provides a class for information to be stored about players
 """
-import math
 
 IGNOREGAMES = False
 # The amount charged for entry into the tournament
@@ -14,17 +13,19 @@ class Player():
     Represent a player who participated in challonge tournaments.
 
     Stores information such as name, elo, games played, etc.
-    """
 
-    """
     Fields include:
     name            str
     elo             int
     won             int
     played          int
     winnings        float
-    placings        list of ints
-    tournaments     int
+    placings        dict
+                    key: tournament id
+                    value: int (placing at that tournament)
+    tournaments     dict
+                    key: tournament id
+                    value: tournament json object
     h2hwins         dict
                     key: player object
                     value: list of match json objects
@@ -32,7 +33,6 @@ class Player():
                     key: player object
                     value: list of match json objects
     """
-
 
     def __init__(self, name, elo, won, played, winnings):
         """
@@ -49,8 +49,8 @@ class Player():
         self.won = won
         self.played = played
         self.winnings = winnings
-        self.placings = []
-        self.tournaments = 0
+        self.placings = {}
+        self.tournaments = {}
         # Dictionary, keys are Player objects,
         # values are lists of Match json objects
         self.h2hwins = {}
@@ -148,7 +148,7 @@ class Player():
                 "   " + "{:>4.3f}".format(average)
                 )
 
-    def wonTourney(self, entrants, place):
+    def record_tourney(self, tournament, place):
         """
         Adds to a players winnings based off their place, assumes 60/30/10 split
         and $2 game fee.
@@ -156,7 +156,9 @@ class Player():
         :int param place: 1/2/3 of the player.
         :return: None
         """
-        self.placings.append(place)
+        self.placings[tournament["id"]] = place
+        self.tournaments[tournament["id"]] = tournament
+        entrants = tournament["participants-count"]
         if place == 1:
             self.winnings += ((entrants * ENTRYFEE) * .6)
         elif place == 2:
@@ -233,18 +235,18 @@ class Player():
         # Player name
         string = "Player: " + self.name + "\n"
         # Placings
-        string += "Placings: "
-        for placing in self.placings:
-            string += str(placing) + ", "
-        string = string[:-2] + "\n"
+        string += "Placings:\n"
+        for tournamentid in self.tournaments:
+            string += "\t" + str(self.placings[tournamentid]) + " at " \
+                    + self.tournaments[tournamentid]["name"] + "\n"
         # Notable wins
-        string += "Notable wins: "
+        string += "Notable wins:  "
         for player in self.h2hwins:
             if player.elo >= self.elo + NOTABLEELO:
                 string += player.name + ", "
         string = string[:-2] + "\n"
         # Notable losses
-        string += "Notable losses: "
+        string += "Notable losses:  "
         for player in self.h2hlosses:
             if player.elo <= self.elo + NOTABLEELO:
                 string += player.name + ", "
