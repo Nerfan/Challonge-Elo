@@ -82,7 +82,7 @@ class EloList:
                 # represented by this participant json object.
                 self.players_by_name[name].record_tourney(
                     self.tournaments[participant["tournament-id"]],
-                    participant["final-rank"]
+                    participant
                 )
 
     def read_matches_file(self):

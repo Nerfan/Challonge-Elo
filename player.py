@@ -2,11 +2,14 @@
 Provides a class for information to be stored about players
 """
 
+from placement import Placement
+
 IGNOREGAMES = False
 # The amount charged for entry into the tournament
 ENTRYFEE = 2
 # The elo requirement for a win to be good/bad
 NOTABLEELO = -80
+
 
 class Player():
     """
@@ -20,12 +23,7 @@ class Player():
     won             int
     played          int
     winnings        float
-    placings        dict
-                    key: tournament id
-                    value: int (placing at that tournament)
-    tournaments     dict
-                    key: tournament id
-                    value: tournament json object
+    placings        list of Placement objects
     h2hwins         dict
                     key: player object
                     value: list of match json objects
@@ -49,8 +47,7 @@ class Player():
         self.won = won
         self.played = played
         self.winnings = winnings
-        self.placings = {}
-        self.tournaments = {}
+        self.placings = []
         # Dictionary, keys are Player objects,
         # values are lists of Match json objects
         self.h2hwins = {}
@@ -134,7 +131,7 @@ class Player():
         """
         average = 0
         for placing in self.placings:
-            average += placing
+            average += placing.placement
         average = average/len(self.placings)
         if self.played == 0:
             playedtemp = 1
@@ -148,25 +145,14 @@ class Player():
                 "   " + "{:>4.3f}".format(average)
                 )
 
-    def record_tourney(self, tournament, place):
+    def record_tourney(self, tournament, player):
         """
-        Adds to a players winnings based off their place, assumes 60/30/10 split
-        and $2 game fee.
-        :int param entrants: number of entrants in the tournament
-        :int param place: 1/2/3 of the player.
-        :return: None
+        Record the results from a tournament.
+
+        Needs the tournament json object and the player json object.
+        Player json object needs to be from the same tournament.
         """
-        self.placings[tournament["id"]] = place
-        self.tournaments[tournament["id"]] = tournament
-        entrants = tournament["participants-count"]
-        if place == 1:
-            self.winnings += ((entrants * ENTRYFEE) * .6)
-        elif place == 2:
-            self.winnings += ((entrants * ENTRYFEE) * .3)
-        elif place == 3:
-            self.winnings += ((entrants * ENTRYFEE) * .1)
-        else:
-            return
+        self.placings.append(Placement(self.name, tournament, player))
 
     def h2h_list(self):
         """
@@ -236,9 +222,8 @@ class Player():
         string = "Player: " + self.name + "\n"
         # Placings
         string += "Placings:\n"
-        for tournamentid in self.tournaments:
-            string += "\t" + str(self.placings[tournamentid]) + " at " \
-                    + self.tournaments[tournamentid]["name"] + "\n"
+        for placing in self.placings:
+            string += "\t" + str(placing) + "\n"
         # Notable wins
         string += "Notable wins:  "
         for player in self.h2hwins:
