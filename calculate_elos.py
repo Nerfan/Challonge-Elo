@@ -294,8 +294,8 @@ def summarize():
             break
 
 if __name__ == "__main__":
-    import elo_list
-    el = elo_list.EloList()
+    import elotui
+    el = elotui.EloTUI()
     el.main()
 #    init()
 #    elos()

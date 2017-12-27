@@ -1,191 +1,171 @@
-#!/usr/bin/python3
 """
-Takes data from Challonge to calculate elos of players.
+Hold the list of elos and operate on it.
 
-Uses the Challonge public API and pychallonge to parse data.
-pychallonge can be found here: https://github.com/russ-/pychallonge
+This class provides utilities to save and load the list, as well as edit it.
+We have functions such as filtering and writing to a spreadsheet.
 """
 
-import os
-import os.path
+import xlsxwriter
 import pickle
-from player import Player
-from spreadsheet_maker import exportSpreadsheet
-
-from aliases import aliases  # Another file I made with a dictionary
-# of replacements for names
-# For example, one of the entries is "JEREMY LEFURGE" : "NERFAN"
+from elo_calculator import EloCalculator
 
 
 class EloList:
     """
-    Store a list of elos based on input tournaments, then export the info.
+    Hold a list of Player objects and operate upon them.
+
+    The Player objects contain information about elo and other ranking data.
+    This class can filter, save, give a string representation of the list, etc.
     """
 
-    DEFAULT_ELO = 1200 # Starting elo for players
+    """
+    Fields:
 
-    # Global dictionary to contain elos
-    # Keys are playernames in all caps, values are Player objects
-    # players_by_name = {}
-
-    # Allows players to be accessed by ID
-    # names_by_id = {}
+    elolist: List of Player objects
+    """
 
     def __init__(self):
         """
-        Constructor method
+        Create a new instance of an EloList object.
 
-        Takes no arguments, returns a new EloList object with empty everything.
+        Takes no arguments, initializes the list to empty.
         """
-        self.players_by_name = {}
-        self.names_by_id = {}
-        self.tournaments = {}
+        self.elolist = []
 
-    def read_tournaments_file(self):
+    def calculate_elos(self,
+                       tournamentfile="obj/tournaments.pkl",
+                       participantsfile="obj/participants.pkl",
+                       matchesfile="obj/matches.pkl"):
         """
-        Read obj/tournaments.pkl and create the tournament dictionary.
-        """
-        with open("obj/tournaments.pkl", "rb") as f:
-            tournaments = pickle.load(f)
-        for tournament in tournaments:
-            self.tournaments[tournament["id"]] = tournament
-
-    def read_players_file(self):
-        """
-        Read obj/players.pkl and create player dictionaries.
-
-        Assumes that the files exist as created by save_tournaments.py.
-        Initializes players_by_name and names_by_id.
-        """
-        with open("obj/participants.pkl", "rb") as f:
-            participants = pickle.load(f)
-        # Go through participants
-        for participantlist in participants:
-            players = 0
-            # Check how many players are in the tournament being parsed
-            for participant in participantlist:
-                players += 1
-            for participant in participantlist:
-                # Normalize all names
-                name = participant["display-name"].upper()
-                # Check for known aliases
-                if name in aliases:
-                    name = aliases[name]
-                # Add to a dictionary; key is id; value is name (string, all caps)
-                self.names_by_id[participant["id"]] = name
-                # If this is a new player, create a new Player object
-                if name not in self.players_by_name:
-                    self.players_by_name[name] = Player(
-                        name, EloList.DEFAULT_ELO, 0, 0, 0
-                    )
-                # Record the player's performance at the tournament
-                # represented by this participant json object.
-                self.players_by_name[name].record_tourney(
-                    self.tournaments[participant["tournament-id"]],
-                    participant
-                )
-
-    def read_matches_file(self):
-        """
-        Read obj/matches.pkl and parse all matches.
-        """
-        with open("obj/matches.pkl", "rb") as f:
-            all_matches = pickle.load(f)
-        for tournament in all_matches:
-            for match in tournament:
-                self.parse_match(match)
-
-    def parse_match(self, match):
-        """
-        Calculate changes to players from a single match.
-
-        Calculate elo changes and record the match to the Player object
-        for head-to-head purposes.
+        Calculate changes to the list of elos based on saved tournaments.
 
         Args:
-            match (json object): Match to take into account to change elos
-        """
-        if match["winner-id"] != None:
-            winner = self.players_by_name[self.names_by_id[match["winner-id"]]]
-            loser = self.players_by_name[self.names_by_id[match["loser-id"]]]
-            # Calculate elo changes
-            # Also record match for head-to-head
-            winner.calculateWin(loser, match)
-            loser.calculateLoss(winner, match)
+            tournamentfile (str): path to file of list of tournaments
+            participantfile (str): path to file of list of participants
+            matchfile (str): path to file of list of matches
 
-    def print_elos(self):
+            All of these files should have been created by save_tourneys.py
         """
-        Print a sorted list of players in order from highest to lowest elo.
-        """
-        print("Elos of all players in descending order:")
-        print("NAME                  ELO    W    G    W/L      AVG")
-        for player in sorted(list(self.players_by_name.values()),
-                             key=lambda x: x.elo, reverse=True):
-            print(player)
+        calculator = EloCalculator()
+        calculator.set_elo_list(self.elolist)
+        calculator.calculate(tournamentfile, participantsfile, matchesfile)
+        self.elolist = calculator.get_elo_list()
 
-    def write_elos(self):
+    def exportSpreadsheet(self, cutoff=15):
         """
-        Save the elos to a file.
+        Export a matchup chart of the top players.
 
-        Each line of the file is in the form:
-        NAME                ELO
-        For example:
-        JOHN DOE            1200
+        Write directly to a file named "MU Chart.xlsx."
+
+        Args:
+            players:    list of Player objects
+            cutoff:     int, number of players to include
+        """
+        workbook = xlsxwriter.Workbook("output/MU Chart.xlsx")
+        worksheet = workbook.add_worksheet()
+        # Create an array for easy access to ratios, this will be changed later
+        # to be in-line
+        sortedPlayers = sorted(list(self.elolist),
+                               key=lambda x: x.elo, reverse=True)
+        # Dictionary, keys are names
+        #   Values are dictionaries, in which keys are opponent names
+        #       Values are tuples of (win, loss)
+        # i.e. h2h[player_name][opponent_name] = (wins, losses)
+        h2h = {}
+        # Loop through all players
+        i = 0
+        for player in sortedPlayers:
+            if i >= cutoff:
+                break
+            ratios = {}
+            # Loop through each individual player's head-to-head records
+            for opponent in sortedPlayers:
+                if opponent in player.h2hwins:
+                    wins = len(player.h2hwins[opponent])
+                else:
+                    wins = 0
+                if opponent in player.h2hlosses:
+                    losses = len(player.h2hlosses[opponent])
+                else:
+                    losses = 0
+                ratios[opponent.name] = (wins, losses)
+            i += 1
+            h2h[player.name] = ratios
+        # Create color formats for the cells
+        # TODO better gradients
+        winning = workbook.add_format({"bg_color" : "green"})
+        losing = workbook.add_format({"bg_color" : "red"})
+        tied = workbook.add_format({"bg_color" : "yellow"})
+        # ore wa kage
+        againstSelf = workbook.add_format({"bg_color" : "gray"})
+        # Write to the spreadsheet
+        for row in range(1, cutoff+1):
+            player_name = sortedPlayers[row-1].name
+            worksheet.write(row, 0, player_name)
+            worksheet.write(0, row, player_name)
+            for col in range(1, cutoff+1):
+                opponent_name = sortedPlayers[col-1].name
+                ratio = h2h[player_name][opponent_name]
+                stringratio = str(ratio[0]) + "-" + str(ratio[1])
+                if row == col:
+                    worksheet.write(row, col, "", againstSelf)
+                elif ratio[0] > ratio[1]:
+                    worksheet.write(row, col, str(stringratio), winning)
+                elif ratio[1] > ratio[0]:
+                    worksheet.write(row, col, str(stringratio), losing)
+                elif ratio[0] == 0 and ratio[1] == 0:
+                    pass
+                else:
+                    worksheet.write(row, col, str(stringratio), tied)
+        workbook.close()
+
+    def write_elos(self, outputfile="output/elos.txt"):
+        """
+        Write the elos to a file in a human-readable format.
+        """
+        with open(outputfile, "w") as f:
+            f.write(str(self))
+
+    def save(self, playersfile="obj/players.pkl"):
+        """
+        Save the elos (Player data) to a pickle encoded file.
         """
         # Pickle file
-        with open("obj/players.pkl", "wb") as f:
-            pickle.dump(list(self.players_by_name.values()),
+        with open(playersfile, "wb") as f:
+            pickle.dump(self.elolist,
                         f, pickle.HIGHEST_PROTOCOL)
-        # Human-readable formatted
-        file = open("output/elos.txt", "w")
-        file.truncate()
-        for player in sorted(list(self.players_by_name.values()),
-                             key=lambda x: x.elo, reverse=True):
-            file.write(str(player) + "\n")
-        file.close()
 
-    def read_players(self):
+    def load(self, playersfile="obj/players.pkl"):
         """
         Read player data from a file.
         """
         players_list = []
-        with open("obj/players.pkl", "rb") as f:
+        with open(playersfile, "rb") as f:
             players_list = pickle.load(f)
-        for player in players_list:
-            name = player.name.upper()
-            self.players_by_name[name] = player
+        self.elolist = players_list()
 
     def summarize(self):
         """
         Print summaries of the top 15 players.
         """
         i = 0
-        for player in sorted(list(self.players_by_name.values()),
+        for player in sorted(self.elolist,
                              key=lambda x: x.elo, reverse=True):
             print(player.summary())
             i += 1
             if i >= 15:
                 break
 
-    def main(self):
-        # Make sure the files to read from actually exist
-        if not (os.path.isdir("obj") and os.path.exists("obj/matches.pkl")
-                and os.path.exists("obj/participants.pkl")):
-            if not os.path.isdir("obj"):
-                os.mkdir("obj")
-            import save_tourneys
-            save_tourneys.main()
-        # Read the files and make the appropriate changes
-        self.read_tournaments_file()
-        self.read_players_file()
-        self.read_matches_file()
-        self.write_elos()
-        exportSpreadsheet(self.players_by_name.values())
-        print("Elos have been saved to \"output/elos.txt\".")
-        print("A MU chart of the top 15 players has been saved to \"output/MU Chart.xlsx\".")
-        self.summarize()
+    def __str__(self):
+        """
+        Return a nicely formatted representation of this list.
 
-
-if __name__ == "__main__":
-    calculator = EloList()
-    calculator.main()
+        Information listed is according to str(Player).
+        """
+        this = "    NAME                  ELO    W    G     W/G     AVG\n"
+        rank = 1
+        for player in sorted(self.elolist,
+                             key=lambda x: x.elo, reverse=True):
+            this += "{:>3d}".format(rank) + " " + str(player) + "\n"
+            rank += 1
+        return this

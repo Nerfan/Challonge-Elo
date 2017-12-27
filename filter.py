@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 """
 Filters elos rankings to a certain subset of players.
 
@@ -8,32 +7,7 @@ TODO: filter based on wins, elo, ranking
 
 import pickle
 from player import Player
-elos = [] # pylint: disable=invalid-name
-
-def read_elos(filename):
-    """
-    DEPRECATED
-    Read pre-existing elos from a file and put them into the elo dictionary
-
-    Assumes that the file is in the format used by save_elos()
-
-    Args:
-        filename (str): Name/path of file beginning in current directory
-    """
-    file = open(filename)
-    for line in file:
-        if line.strip() != "":
-            temp = line.split()
-            name = ""
-            for i in range(len(temp)-3):
-                name += temp[i] + " "
-            name = name.strip()
-            elos.append(Player(name,
-                               float(temp[-3]),
-                               int(temp[-2]),
-                               int(temp[-1]))
-                       )
-    file.close()
+elos = []
 
 def save_elos(filename="elos.txt"):
     """
@@ -51,13 +25,6 @@ def save_elos(filename="elos.txt"):
         file.write(str(player) + "\n")
     file.close()
 
-def read_players():
-    """
-    Read player data from a file.
-    """
-    global elos
-    with open("obj/players.pkl", "rb") as f:
-        elos = pickle.load(f)
 
 def filter_by_games(eloslist, minimum):
     """
@@ -154,18 +121,3 @@ def filter_by_tournaments(eloslist, minimum):
     for player in toremove:
         eloslist.remove(player)
     return eloslist
-
-def main():
-    """
-    Read the player data from obj/players.pkl then work with it.
-
-    In the future, a prompt or command line args might be useful.
-    For now, any changes will be made manually here.
-    """
-    global elos
-    read_players()
-    elos = filter_by_tournaments(elos, 3)
-    save_elos("filtered.txt")
-
-if __name__=="__main__":
-    main()

@@ -245,6 +245,7 @@ class Player():
         Returns:
             int: Value of constant to use to calculate elo
         """
+        return 32
         if self.elo <= 1200:
             return 60
         if self.elo <= 1300:
