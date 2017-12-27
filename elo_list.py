@@ -119,6 +119,81 @@ class EloList:
                     worksheet.write(row, col, str(stringratio), tied)
         workbook.close()
 
+    def filter_by_games(self, minimum):
+        """
+        Remove players with below a certain number of games
+
+        Args:
+            eloslist (list of Players): List to be filtered
+            minimum (int): Minimum number of games players should have played
+                           Anybody with fewer games is removed from the list
+        """
+        toremove = []
+        for player in self.elolist:
+            if player.played < minimum:
+                toremove.append(player)
+        for player in toremove:
+            self.elolist.remove(player)
+
+    def filter_by_wins(self, wins):
+        """
+        Remove entries with less than a certain amount of wins
+
+        Args:
+            eloslist (list of Players): List to be filtered
+            wins (int): Minimum number of wins to be left in the list
+        """
+        toremove = []
+        for player in self.elolist:
+            if player.won < wins:
+                toremove.append(player)
+        for player in toremove:
+            self.elolist.remove(player)
+
+    def filter_by_rank(self, cutoff):
+        """
+        Remove entries beyond a certain rank
+
+        Args:
+            eloslist (list of Players): List to be filtered
+            cutoff (int): Last rank to keep (e.g. 10 if you want to top 10)
+        """
+        i = 0
+        for player in sorted(self.elolist, key=lambda x: x.elo, reverse=True):
+            if i >= cutoff:
+                self.elolist.remove(player)
+            i += 1
+
+    def filter_by_elo(self, elo):
+        """
+        Remove entries below a certain elo
+
+        Args:
+            eloslist (list of Players): List to be filtered
+            elo (int): Minimum elo to be left in the list
+        """
+        toremove = []
+        for player in self.elolist:
+            if player.elo < elo:
+                toremove.append(player)
+        for player in toremove:
+            self.elolist.remove(player)
+
+    def filter_by_tournaments(self, minimum):
+        """
+        Remove entries who have below a certain number of tournament entries.
+
+        Args:
+            eloslist (list of Players): List to be filtered
+            minimum (int): Minimum number of tournaments required to remain
+        """
+        toremove = []
+        for player in self.elolist:
+            if player.tournaments < minimum:
+                toremove.append(player)
+        for player in toremove:
+            self.elolist.remove(player)
+
     def write_elos(self, outputfile="output/elos.txt"):
         """
         Write the elos to a file in a human-readable format.
