@@ -18,7 +18,7 @@ Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai (
 
    Or if you'd rather not use the terminal, simply download the .zip and unpack it somewhere.
 
-2. Then inside the directory just created, create a file called setCredentials.py that contains the following two lines:
+2. Then inside the directory just created, create a file called set\_credentials.py that contains the following two lines:
 
    ```python
    import challonge
@@ -30,7 +30,7 @@ Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai (
    Alternatively, you could edit readTourney.py and replace the line
 
    ```python
-   import setCredentials
+   import set_credentials
    ```
 
    with the code block above.
@@ -45,8 +45,6 @@ Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai (
 4. OPTIONAL: One the tournament ids are entered, run `$ ./save_tournaments.py`. If this is your first time running the program, this step is unnecessary. When you run `./calculate_elos.py`, Python will see that the files do not exist yet, and will automatically call `./save_tourneys.py`. If you wish to update the list of tournaments, this step is necessary.
 
 5. After that, you should be good to simply run `$ ./calculate_elos.py`, and elo rankings will be displayed and saved to elos.txt.
-
-6. If you would like to see a specific player's head-to-head records against all other players, type their name when prompted. If you would like to see details (match scores, dates) about their head-to-head with another specific player, enter their name when prompted. No input will back out of either prompt.
 
 ## Additional Configuration
 

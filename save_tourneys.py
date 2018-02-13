@@ -9,15 +9,30 @@ Saves to three separate files.
 import pickle
 import challonge
 
-import setCredentials # This is a file I made with two lines:
-# import challonge
-# challonge.set_credentials("USERNAME", "API_KEY")
-# USERNAME and API_KEY were replaced with my info, quotes included
-# The only reason I made the file is so that I don't accidentally upload my
-# challonge API key
-
-# Alternatively, uncomment the folliwing line and add your information:
-# challonge.set_credentials("USERNAME", "API_KEY")
+try:
+    import set_credentials
+    # This is a file I made with two lines:
+    # import challonge
+    # challonge.set_credentials("USERNAME", "API_KEY")
+    # USERNAME and API_KEY were replaced with my info, quotes included
+    # The only reason I made the file is so that I don't accidentally upload my
+    # challonge API key
+    
+    # Alternatively, uncomment the folliwing line and add your information:
+    # challonge.set_credentials("USERNAME", "API_KEY")
+except ImportError:
+    print("File set_credentials.py was not found. Prompting for credentials.")
+    print("Information provided will be written out to set_credentials.py.")
+    username = input("Username: ")
+    apikey = input("API Key: ")
+    challonge.set_credentials(username, apikey)
+    with open("set_credentials.py", "w") as f:
+        f.write("import challonge\n")
+        f.write("challonge.set_credentials(\"")
+        f.write(username)
+        f.write("\", \"")
+        f.write(apikey)
+        f.write("\")")
 
 from tournamentlist import tourneys # And again, same case as aliases
 # Just a list if strings instead of a dictionary.
