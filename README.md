@@ -8,6 +8,10 @@ Thanks also to GitHub user [russ-](https://github.com/russ-) for creating [pycha
 
 Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai ([swc19](https://github.com/swc19))
 
+## Dependencies
+
+The Python 3 modules `iso8601` and `xlsxwriter` are required. They can be obtained by simply running `pip3 install iso8601 xlsxwriter`.
+
 ## Usage
 
 1. Assuming that you already have Python 3.5 installed, the first step is to clone this repository.
