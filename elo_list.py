@@ -10,7 +10,7 @@ import pickle
 import os
 from elo_calculator import EloCalculator
 
-currdir = os.path.dirname(os.path.realpath(__file__))
+SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class EloList:
@@ -64,7 +64,8 @@ class EloList:
             players:    list of Player objects
             cutoff:     int, number of players to include
         """
-        workbook = xlsxwriter.Workbook(os.path.join(currdir, "output", "MU Chart.xlsx"))
+        wbpath = os.path.join(SCRIPTDIR, "output", "MY Chart.xlsx")
+        workbook = xlsxwriter.Workbook(wbpath)
         worksheet = workbook.add_worksheet()
         # Create an array for easy access to ratios, this will be changed later
         # to be in-line
@@ -96,18 +97,18 @@ class EloList:
             h2h[player.name] = ratios
         # Create color formats for the cells
         # TODO better gradients
-        winning = workbook.add_format({"bg_color" : "green"})
-        losing = workbook.add_format({"bg_color" : "red"})
-        tied = workbook.add_format({"bg_color" : "yellow"})
+        winning = workbook.add_format({"bg_color": "green"})
+        losing = workbook.add_format({"bg_color": "red"})
+        tied = workbook.add_format({"bg_color": "yellow"})
         # ore wa kage
-        againstSelf = workbook.add_format({"bg_color" : "gray"})
+        againstSelf = workbook.add_format({"bg_color": "gray"})
         # Write to the spreadsheet
-        for row in range(1, cutoff+1):
-            player_name = sortedPlayers[row-1].name
+        for row in range(1, cutoff + 1):
+            player_name = sortedPlayers[row - 1].name
             worksheet.write(row, 0, player_name)
             worksheet.write(0, row, player_name)
-            for col in range(1, cutoff+1):
-                opponent_name = sortedPlayers[col-1].name
+            for col in range(1, cutoff + 1):
+                opponent_name = sortedPlayers[col - 1].name
                 ratio = h2h[player_name][opponent_name]
                 stringratio = str(ratio[0]) + "-" + str(ratio[1])
                 if row == col:
@@ -124,7 +125,7 @@ class EloList:
 
     def filter_by_games(self, minimum):
         """
-        Remove players with below a certain number of games
+        Remove players with below a certain number of games.
 
         Args:
             eloslist (list of Players): List to be filtered
@@ -140,7 +141,7 @@ class EloList:
 
     def filter_by_wins(self, wins):
         """
-        Remove entries with less than a certain amount of wins
+        Remove entries with less than a certain amount of wins.
 
         Args:
             eloslist (list of Players): List to be filtered
@@ -155,7 +156,7 @@ class EloList:
 
     def filter_by_rank(self, cutoff):
         """
-        Remove entries beyond a certain rank
+        Remove entries beyond a certain rank.
 
         Args:
             eloslist (list of Players): List to be filtered
@@ -169,7 +170,7 @@ class EloList:
 
     def filter_by_elo(self, elo):
         """
-        Remove entries below a certain elo
+        Remove entries below a certain elo.
 
         Args:
             eloslist (list of Players): List to be filtered
@@ -200,17 +201,21 @@ class EloList:
     def write_elos(self, outputfile=os.path.join("output", "elos.txt")):
         """
         Write the elos to a file in a human-readable format.
+
+        By default, this is saved to output/elos.txt.
         """
-        outputfilepath = os.path.join(currdir, outputfile)
+        outputfilepath = os.path.join(SCRIPTDIR, outputfile)
         with open(outputfilepath, "w") as f:
             f.write(str(self))
 
     def save(self, playersfile=os.path.join("output", "players.pkl")):
         """
         Save the elos (Player data) to a pickle encoded file.
+
+        This can be loaded in for future invocations (e.g. filtering).
         """
         # Pickle file
-        playersfilepath = os.path.join(currdir, playersfile)
+        playersfilepath = os.path.join(SCRIPTDIR, playersfile)
         with open(playersfilepath, "wb") as f:
             pickle.dump(self.elolist,
                         f, pickle.HIGHEST_PROTOCOL)
@@ -218,9 +223,11 @@ class EloList:
     def load(self, playersfile=os.path.join("output", "players.pkl")):
         """
         Read player data from a file.
+
+        This should be the file that was saved by elo_list.save().
         """
         players_list = []
-        playersfilepath = os.path.join(currdir, playersfile)
+        playersfilepath = os.path.join(SCRIPTDIR, playersfile)
         with open(playersfilepath, "rb") as f:
             players_list = pickle.load(f)
         self.elolist = players_list()
@@ -228,6 +235,8 @@ class EloList:
     def summarize(self):
         """
         Print summaries of the top 15 players.
+
+        This summary includes information such as rank, elo, and W/L ratio.
         """
         i = 0
         for player in sorted(self.elolist,
