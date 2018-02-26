@@ -7,7 +7,10 @@ We have functions such as filtering and writing to a spreadsheet.
 
 import xlsxwriter
 import pickle
+import os
 from elo_calculator import EloCalculator
+
+currdir = os.path.dirname(os.path.realpath(__file__))
 
 
 class EloList:
@@ -61,7 +64,7 @@ class EloList:
             players:    list of Player objects
             cutoff:     int, number of players to include
         """
-        workbook = xlsxwriter.Workbook("output/MU Chart.xlsx")
+        workbook = xlsxwriter.Workbook(os.path.join(currdir, "output", "MU Chart.xlsx"))
         worksheet = workbook.add_worksheet()
         # Create an array for easy access to ratios, this will be changed later
         # to be in-line
@@ -194,28 +197,31 @@ class EloList:
         for player in toremove:
             self.elolist.remove(player)
 
-    def write_elos(self, outputfile="output/elos.txt"):
+    def write_elos(self, outputfile=os.path.join("output", "elos.txt")):
         """
         Write the elos to a file in a human-readable format.
         """
-        with open(outputfile, "w") as f:
+        outputfilepath = os.path.join(currdir, outputfile)
+        with open(outputfilepath, "w") as f:
             f.write(str(self))
 
-    def save(self, playersfile="obj/players.pkl"):
+    def save(self, playersfile=os.path.join("output", "players.pkl")):
         """
         Save the elos (Player data) to a pickle encoded file.
         """
         # Pickle file
-        with open(playersfile, "wb") as f:
+        playersfilepath = os.path.join(currdir, playersfile)
+        with open(playersfilepath, "wb") as f:
             pickle.dump(self.elolist,
                         f, pickle.HIGHEST_PROTOCOL)
 
-    def load(self, playersfile="obj/players.pkl"):
+    def load(self, playersfile=os.path.join("output", "players.pkl")):
         """
         Read player data from a file.
         """
         players_list = []
-        with open(playersfile, "rb") as f:
+        playersfilepath = os.path.join(currdir, playersfile)
+        with open(playersfilepath, "rb") as f:
             players_list = pickle.load(f)
         self.elolist = players_list()
 
