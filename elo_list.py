@@ -8,6 +8,7 @@ We have functions such as filtering and writing to a spreadsheet.
 import xlsxwriter
 import pickle
 import os
+import pathlib
 from elo_calculator import EloCalculator
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
@@ -54,7 +55,7 @@ class EloList:
         calculator.calculate(tournamentfile, participantsfile, matchesfile)
         self.elolist = calculator.get_elo_list()
 
-    def exportSpreadsheet(self, cutoff=15):
+    def export_spreadsheet(self, cutoff=15):
         """
         Export a matchup chart of the top players.
 
@@ -65,6 +66,10 @@ class EloList:
             cutoff:     int, number of players to include
         """
         wbpath = os.path.join(SCRIPTDIR, "output", "MU Chart.xlsx")
+        # Create the directory if it doesn't exist already
+        dirpath = pathlib.Path(os.path.dirname(wbpath))
+        dirpath.mkdir(parents=True, exist_ok=True)
+        # Create the workbook
         workbook = xlsxwriter.Workbook(wbpath)
         worksheet = workbook.add_worksheet()
         # Create an array for easy access to ratios, this will be changed later
@@ -205,7 +210,7 @@ class EloList:
         By default, this is saved to output/elos.txt.
         """
         outputfilepath = os.path.join(SCRIPTDIR, outputfile)
-        with open(outputfilepath, "w") as f:
+        with openFile(outputfilepath, "w") as f:
             f.write(str(self))
 
     def save(self, playersfile=os.path.join("output", "players.pkl")):
@@ -216,7 +221,7 @@ class EloList:
         """
         # Pickle file
         playersfilepath = os.path.join(SCRIPTDIR, playersfile)
-        with open(playersfilepath, "wb") as f:
+        with openFile(playersfilepath, "wb") as f:
             pickle.dump(self.elolist,
                         f, pickle.HIGHEST_PROTOCOL)
 
@@ -228,7 +233,7 @@ class EloList:
         """
         players_list = []
         playersfilepath = os.path.join(SCRIPTDIR, playersfile)
-        with open(playersfilepath, "rb") as f:
+        with openFile(playersfilepath, "rb") as f:
             players_list = pickle.load(f)
         self.elolist = players_list()
 
@@ -246,6 +251,21 @@ class EloList:
             if i >= 15:
                 break
 
+    def save_summaries(self, filepath=os.path.join("output", "summaries.txt")):
+        """
+        Save summaries of the top 15 players.
+
+        This summary includes information such as rank, elo, and W/L ratio.
+        """
+        with openFile(filepath, "w") as f:
+            i = 0
+            for player in sorted(self.elolist,
+                                 key=lambda x: x.elo, reverse=True):
+                f.write(player.summary() + "\n")
+                i += 1
+                if i >= 15:
+                    break
+
     def __str__(self):
         """
         Return a nicely formatted representation of this list.
@@ -259,3 +279,10 @@ class EloList:
             this += "{:>3d}".format(rank) + " " + str(player) + "\n"
             rank += 1
         return this
+
+
+def openFile(filepath, mode):
+    dirpath = pathlib.Path(os.path.dirname(filepath))
+    dirpath.mkdir(parents=True, exist_ok=True)
+    return open(filepath, mode)
+
