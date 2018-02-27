@@ -64,7 +64,7 @@ class EloList:
             players:    list of Player objects
             cutoff:     int, number of players to include
         """
-        wbpath = os.path.join(SCRIPTDIR, "output", "MY Chart.xlsx")
+        wbpath = os.path.join(SCRIPTDIR, "output", "MU Chart.xlsx")
         workbook = xlsxwriter.Workbook(wbpath)
         worksheet = workbook.add_worksheet()
         # Create an array for easy access to ratios, this will be changed later
