@@ -5,8 +5,6 @@ Provides a class for information to be stored about players
 from placement import Placement
 
 IGNOREGAMES = False
-# The amount charged for entry into the tournament
-ENTRYFEE = 2
 # The elo requirement for a win to be good/bad
 NOTABLEELO = -80
 
@@ -32,7 +30,10 @@ class Player():
                     value: list of match json objects
     """
 
-    def __init__(self, name, elo, won, played, winnings):
+    # Starting elo for players
+    DEFAULT_ELO = 1200
+
+    def __init__(self, name):
         """
         Constructor method
 
@@ -43,10 +44,10 @@ class Player():
             played (int): Number of games played
         """
         self.name = name
-        self.elo = float(elo)
-        self.won = won
-        self.played = played
-        self.winnings = winnings
+        self.elo = float(Player.DEFAULT_ELO)
+        self.won = 0
+        self.played = 0
+        self.winnings = 0
         self.placings = []
         # Dictionary, keys are Player objects,
         # values are lists of Match json objects
@@ -258,3 +259,4 @@ class Player():
         #return 96/math.sqrt(self.played)
 
     __repr__ = __str__
+

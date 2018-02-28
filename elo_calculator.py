@@ -19,8 +19,6 @@ class EloCalculator:
 
     Methods are provided to save and retrive elo data as well.
     """
-    # Starting elo for players
-    DEFAULT_ELO = 1200
 
     # Global dictionary to contain elos
     # Keys are playernames in all caps, values are Player objects
@@ -73,9 +71,7 @@ class EloCalculator:
                 self.names_by_id[participant["id"]] = name
                 # If this is a new player, create a new Player object
                 if name not in self.players_by_name:
-                    self.players_by_name[name] = Player(
-                        name, EloCalculator.DEFAULT_ELO, 0, 0, 0
-                    )
+                    self.players_by_name[name] = Player(name)
                 # Record the player's performance at the tournament
                 # represented by this participant json object.
                 self.players_by_name[name].record_tourney(
