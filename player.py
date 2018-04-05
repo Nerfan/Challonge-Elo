@@ -3,6 +3,7 @@ Provides a class for information to be stored about players
 """
 
 from placement import Placement
+import math
 
 IGNOREGAMES = False
 # The elo requirement for a win to be good/bad
@@ -247,6 +248,9 @@ class Player():
             int: Value of constant to use to calculate elo
         """
         return 32
+        elodiff = abs(Player.DEFAULT_ELO - self.elo)
+        variance = math.sqrt(elodiff) * 1.5
+        return int(48 - variance)
         if self.elo <= 1200:
             return 60
         if self.elo <= 1300:

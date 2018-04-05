@@ -100,6 +100,7 @@ class EloList:
                 ratios[opponent.name] = (wins, losses)
             i += 1
             h2h[player.name] = ratios
+        cutoff = i
         # Create color formats for the cells
         # TODO better gradients
         winning = workbook.add_format({"bg_color": "green"})
@@ -198,7 +199,7 @@ class EloList:
         """
         toremove = []
         for player in self.elolist:
-            if player.tournaments < minimum:
+            if len(player.placings) < minimum:
                 toremove.append(player)
         for player in toremove:
             self.elolist.remove(player)
