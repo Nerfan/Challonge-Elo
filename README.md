@@ -10,7 +10,7 @@ Authors: Jeremy Lefurge ([Nerfan](https://github.com/Nerfan)) and Scott Csefai (
 
 ## Dependencies
 
-`pychallonge` is required, and can be installed by running `pip install -e git+http://github.com/russ-/pychallonge#egg=pychallonge`. Alternatively, downloading the source and then copying the `challonge` directory to this program's directory will also work.
+`pychallonge` is required, and can be installed by running `pip3 install -e git+http://github.com/russ-/pychallonge#egg=pychallonge`. Alternatively, downloading the source and then copying the `challonge` directory to this program's directory will also work.
 
 The Python 3 modules `iso8601` and `xlsxwriter` are required. They can be obtained by simply running `pip3 install iso8601 xlsxwriter`.
 
