@@ -11,26 +11,45 @@ import os
 import getopt
 from elo_list import EloList
 
-USAGE = "calculate_elos.py [-h | -i | -s]\n"\
+USAGE = "calculate_elos.py [-h] [-t | -g | -w | -r | -e <value>]\n"\
       + "\t-h\tDisplay this help\n"\
-      + "\t-i\tRun interactively"
+      + "\t-t\tRequire a minimum amount of tournaments\n"\
+      + "\t-g\tRequire a minimum amount of games\n"\
+      + "\t-w\tRequire a minimum amount of wins\n"\
+      + "\t-r\tRequire a minimum rank\n"\
+      + "\t-e\tRequire a minimum elo"
+
+# Maybe list out the args as tuples then statically load them into these
+SHORTARGS = "hHt:g:w:r:e:"
+LONGARGS = ["help", "tournaments=", "games=", "wins=", "rank=", "elo="]
 
 if __name__ == "__main__":
     minTournament = 0
-
+    minGames = 0
+    minWins = 0
+    minRank = 0
+    minElo = 0
 
     argv = sys.argv[1:]
     try:
-        opts, args = getopt.getopt(argv, "hHt:", ["help", "tournaments="])
+        opts, args = getopt.getopt(argv, SHORTARGS, LONGARGS)
     except getopt.GetoptError:
         print(USAGE)
         sys.exit(2)
     for opt, arg in opts:
-        if opt in ['-h', '-H', '--help']:
+        if opt in ('-h', '-H', '--help'):
             print(USAGE)
             sys.exit(0)
-        if opt == '-t':
+        if opt in ('-t', '--tournaments'):
             minTournament = int(arg)
+        if opt in ('-g', '--games'):
+            minGames = int(arg)
+        if opt in ('-w', '--wins'):
+            minWins = int(arg)
+        if opt in ('-r', '--rank'):
+            minRank = int(arg)
+        if opt in ('-e', '--elo'):
+            minRank = int(arg)
 
     # Make sure the files to read from actually exist
     if not (os.path.isdir("obj") and os.path.exists("obj/matches.pkl")
@@ -44,6 +63,14 @@ if __name__ == "__main__":
     elos.calculate_elos()
     if minTournament > 0:
         elos.filter_by_tournaments(minTournament)
+    if minGames > 0:
+        elos.filter_by_games(minGames)
+    if minWins > 0:
+        elos.filter_by_wins(minWins)
+    if minRank > 0:
+        elos.filter_by_rank(minRank)
+    if minElo > 0:
+        elos.filter_by_elo(minElo)
     elos.export_spreadsheet()
     elos.save()
     elos.write_elos()
@@ -52,3 +79,4 @@ if __name__ == "__main__":
     print("A MU chart of the top 15 players has been saved to"
           + " \"output/MU Chart.xlsx\".")
     print("Top 15 summaries have been saved to \"output/summaries.txt\".")
+
