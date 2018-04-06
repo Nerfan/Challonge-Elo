@@ -64,10 +64,10 @@ class EloCalculator:
             for participant in participantlist:
                 # Normalize all names
                 name = participant["display-name"].upper()
-                # Check for known aliases
-                if name in aliases:
+                # Check for known aliases; allow transitive property
+                while name in aliases:
                     name = aliases[name]
-                # Add to a dictionary; key is id; value is name (string, all caps)
+                # Add to a dictionary; key is id; value is name (all caps)
                 self.names_by_id[participant["id"]] = name
                 # If this is a new player, create a new Player object
                 if name not in self.players_by_name:
