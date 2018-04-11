@@ -61,19 +61,17 @@ class EloCalculator:
             # Check how many players are in the tournament being parsed
             for participant in participantlist:
                 players += 1
+            # Add the player to the dictionaries
             for participant in participantlist:
                 # Normalize all names
                 name = participant["display-name"].upper()
                 # Check for known aliases; allow transitive property
                 while name in aliases:
                     name = aliases[name]
-                # Add to a dictionary; key is id; value is name (all caps)
+                # Add to reference dictionaries and update data
                 self.names_by_id[participant["id"]] = name
-                # If this is a new player, create a new Player object
                 if name not in self.players_by_name:
                     self.players_by_name[name] = Player(name)
-                # Record the player's performance at the tournament
-                # represented by this participant json object.
                 self.players_by_name[name].record_tourney(
                     self.tournaments[participant["tournament-id"]],
                     participant
