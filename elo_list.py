@@ -217,7 +217,7 @@ class EloList:
                                  key=lambda x: x.elo, reverse=True):
                 tempfile.write(player.name + "\n")
         # Edit the file
-        editor = os.environ.get("EDITO")
+        editor = os.environ.get("EDITOR")
         if editor is not None:
             subprocess.call([editor, tempfilename])
         else:
