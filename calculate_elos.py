@@ -11,17 +11,18 @@ import os
 import getopt
 from elo_list import EloList
 
-USAGE = "calculate_elos.py [-h] [-t | -g | -w | -r | -e <value>]\n"\
+USAGE = "calculate_elos.py [-h] [-t | -g | -w | -r | -e <value>] [-f]\n"\
       + "\t-h\tDisplay this help\n"\
       + "\t-t\tRequire a minimum amount of tournaments\n"\
       + "\t-g\tRequire a minimum amount of games\n"\
       + "\t-w\tRequire a minimum amount of wins\n"\
       + "\t-r\tRequire a minimum rank\n"\
-      + "\t-e\tRequire a minimum elo"
+      + "\t-e\tRequire a minimum elo\n"\
+      + "\t-f\tManually filter players"
 
 # Maybe list out the args as tuples then statically load them into these
-SHORTARGS = "hHt:g:w:r:e:"
-LONGARGS = ["help", "tournaments=", "games=", "wins=", "rank=", "elo="]
+SHORTARGS = "hHt:g:w:r:e:f"
+LONGARGS = ["help", "tournaments=", "games=", "wins=", "rank=", "elo=", "filter"]
 
 if __name__ == "__main__":
     minTournament = 0
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     minWins = 0
     minRank = 0
     minElo = 0
+    manualFilter = False
 
     argv = sys.argv[1:]
     try:
@@ -50,6 +52,8 @@ if __name__ == "__main__":
             minRank = int(arg)
         if opt in ('-e', '--elo'):
             minRank = int(arg)
+        if opt in ('-f', '--filter'):
+            manualFilter = True
 
     # Make sure the files to read from actually exist
     if not (os.path.isdir("obj") and os.path.exists("obj/matches.pkl")
@@ -71,6 +75,8 @@ if __name__ == "__main__":
         elos.filter_by_rank(minRank)
     if minElo > 0:
         elos.filter_by_elo(minElo)
+    if manualFilter:
+        elos.filter_manually()
     elos.export_spreadsheet()
     elos.save()
     elos.write_elos()

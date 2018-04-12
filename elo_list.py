@@ -5,10 +5,13 @@ This class provides utilities to save and load the list, as well as edit it.
 We have functions such as filtering and writing to a spreadsheet.
 """
 
+import time
 import xlsxwriter
 import pickle
 import os
 import pathlib
+import subprocess
+import webbrowser
 from elo_calculator import EloCalculator
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
@@ -199,6 +202,34 @@ class EloList:
                 toremove.append(player)
         for player in toremove:
             self.elolist.remove(player)
+
+    def filter_manually(self):
+        """
+        Open a text editor for the user to manually filter entries.
+
+        If $EDITOR is set, that will be used.
+        Otherwise, defers to the system default.
+        """
+        tempfilename = os.path.join("obj", ".elolisttempfile.txt")
+        # Write names to a temp file
+        with openFile(tempfilename, "w") as tempfile:
+            for player in sorted(self.elolist,
+                                 key=lambda x: x.elo, reverse=True):
+                tempfile.write(player.name + "\n")
+        # Edit the file
+        editor = os.environ.get("EDITO")
+        if editor is not None:
+            subprocess.call([editor, tempfilename])
+        else:
+            return
+        # Read the remaining names from the file then delete it
+        remaining = []
+        with openFile(tempfilename, "r") as tempfile:
+            for line in tempfile:
+                remaining.append(line.strip())
+        os.remove(tempfilename)
+        # Filter the list
+        self.elolist = [p for p in self.elolist if p.name in remaining]
 
     def write_elos(self, outputfile=os.path.join("output", "elos.txt")):
         """
