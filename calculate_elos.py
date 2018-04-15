@@ -58,15 +58,15 @@ if __name__ == "__main__":
     elos.calculate_elos()
     for opt, arg in opts:
         if opt.strip('-')[0] == 't':  # Tournaments
-            elos.filter_by_tournaments(arg)
+            elos.filter_by_tournaments(int(arg))
         if opt.strip('-')[0] == 'g':  # Games
-            elos.filter_by_games(arg)
+            elos.filter_by_games(int(arg))
         if opt.strip('-')[0] == 'w':  # Wins
-            elos.filter_by_wins(arg)
+            elos.filter_by_wins(int(arg))
         if opt.strip('-')[0] == 'r':  # Rank
-            elos.filter_by_rank(arg)
+            elos.filter_by_rank(int(arg))
         if opt.strip('-')[0] == 'e':  # Elo
-            elos.filter_by_elo(arg)
+            elos.filter_by_elo(int(arg))
         if opt.strip('-')[0] == 'f':  # Manual filtering
             elos.filter_manually()
     elos.export_spreadsheet()
