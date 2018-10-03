@@ -66,7 +66,7 @@ class EloCalculator:
                 # Normalize all names
                 name = participant["display-name"].upper()
                 # Check for known aliases; allow transitive property
-                while name in aliases:
+                if name in aliases:
                     name = aliases[name]
                 # Add to reference dictionaries and update data
                 self.names_by_id[participant["id"]] = name
