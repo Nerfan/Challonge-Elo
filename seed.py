@@ -10,6 +10,7 @@ from elo_list import EloList
 from player import Player
 import challonge
 import requests
+from aliases import aliases
 
 try:
     import set_credentials
@@ -41,11 +42,14 @@ def seed(tourney_id):
     elolist = EloList()
     elolist.load()
     players_by_name = {player.name: player for player in elolist.elolist}
+    name_to_id = {}
+    print("Fetching tournament information...")
     tournament = challonge.tournaments.show(tourney_id)
     participants = challonge.participants.index(tournament["id"])
     seeded = []
     for participant in participants:
         name = participant["name"]
+        name_to_id[name] = participant["id"]
         if name.upper() in players_by_name.keys():
             player = players_by_name[name.upper()]
             player.name = name
@@ -54,27 +58,22 @@ def seed(tourney_id):
             player.elo = 1000
         seeded.append(player)
     seeded = sorted(seeded, key=lambda x: x.elo, reverse=True)
-    updatetournament(tourney_id, seeded)
+    updatetournament(tourney_id, seeded, name_to_id)
 
 
-def updatetournament(tourney_id, participants):
+def updatetournament(tourney_id, participants, name_to_id):
     """
     Args:
         tourney_id (str): id of the tournament to set participants for
         participants (list of Players): ordered list of participants
     """
-    apikey = challonge.api.get_credentials()[1]
-    r = requests.delete("https://api.challonge.com/v1/tournaments/%s/participants/clear.json" % tourney_id, data={"api_key": apikey})
-    participantsdata = []
     seed = 1
     for player in participants:
-        participant = {"name": player.name, "seed": seed}
-        participantsdata.append(participant)
+        print("Updating %s as seed %d" % (player.name, seed))
+        challonge.participants.update(tourney_id, name_to_id[player.name],
+                name=player.name, seed=seed)
         seed += 1
-    data = {"participants": participantsdata, "api_key": apikey}
-    print(data)
-    r = requests.post("https://api.challonge.com/v1/tournaments/%s/participants/bulk_add.json" % tourney_id, data=data)
-    print(r.status_code, r.reason)
+
 
 if __name__ == "__main__":
     seed("nerfanTest")
