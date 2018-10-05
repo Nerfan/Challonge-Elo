@@ -263,7 +263,7 @@ class EloList:
         playersfilepath = os.path.join(SCRIPTDIR, playersfile)
         with openFile(playersfilepath, "rb") as f:
             players_list = pickle.load(f)
-        self.elolist = players_list()
+        self.elolist = players_list
 
     def summarize(self):
         """

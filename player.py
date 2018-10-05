@@ -134,7 +134,8 @@ class Player():
         average = 0
         for placing in self.placings:
             average += placing.placement
-        average = average/len(self.placings)
+        if len(self.placings) > 0:
+            average = average/len(self.placings)
         if self.played == 0:
             playedtemp = 1
         else:
