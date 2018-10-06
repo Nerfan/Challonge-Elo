@@ -68,6 +68,8 @@ class EloCalculator:
                 # Check for known aliases; allow transitive property
                 if name in aliases:
                     name = aliases[name]
+                if "JUSTIN" in name:
+                    name = "JUSTIN"
                 # Add to reference dictionaries and update data
                 self.names_by_id[participant["id"]] = name
                 if name not in self.players_by_name:
