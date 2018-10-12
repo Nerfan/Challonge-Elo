@@ -20,7 +20,7 @@ try:
     # USERNAME and API_KEY were replaced with my info, quotes included
     # The only reason I made the file is so that I don't accidentally upload my
     # challonge API key
-    
+
     # Alternatively, uncomment the folliwing line and add your information:
     # challonge.set_credentials("USERNAME", "API_KEY")
 except ImportError:
@@ -50,6 +50,7 @@ def seed(tourney_id):
     for participant in participants:
         name = participant["name"]
         name_to_id[name] = participant["id"]
+        print(name)
         if name.upper() in players_by_name.keys():
             player = players_by_name[name.upper()]
             player.name = name
@@ -76,4 +77,5 @@ def updatetournament(tourney_id, participants, name_to_id):
 
 
 if __name__ == "__main__":
-    seed("nerfanTest")
+    seed("rocnysmash-tpg32s4s")
+
